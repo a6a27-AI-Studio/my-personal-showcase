@@ -1,0 +1,55 @@
+import type {
+  About,
+  Skill,
+  Service,
+  PortfolioItem,
+  ResumeMeta,
+  Message,
+  Me,
+  UserRole,
+  SkillFilterParams,
+  PortfolioFilterParams,
+} from '@/types';
+
+// DataClient Interface - All UI components must use this interface
+export interface DataClient {
+  // ===== Public Read Operations =====
+  getAbout(): Promise<About>;
+  listSkills(params?: SkillFilterParams): Promise<Skill[]>;
+  listServices(): Promise<Service[]>;
+  listPortfolio(params?: PortfolioFilterParams): Promise<PortfolioItem[]>;
+  getPortfolioBySlug(slug: string): Promise<PortfolioItem | null>;
+  getResume(): Promise<ResumeMeta>;
+
+  // ===== Identity/Auth =====
+  getMe(): Promise<Me>;
+  setMockRole(role: UserRole): Promise<void>; // For mock login switching
+
+  // ===== Messages (User's own only) =====
+  listMyMessages(): Promise<Message[]>;
+  createMyMessage(payload: { title?: string; content: string }): Promise<Message>;
+  updateMyMessage(id: string, payload: { title?: string; content?: string }): Promise<Message>;
+  deleteMyMessage(id: string): Promise<void>;
+
+  // ===== Admin CMS Operations =====
+  // About
+  upsertAbout(payload: About): Promise<About>;
+
+  // Skills
+  createSkill(payload: Omit<Skill, 'id' | 'updatedAt'>): Promise<Skill>;
+  updateSkill(id: string, payload: Partial<Skill>): Promise<Skill>;
+  deleteSkill(id: string): Promise<void>;
+
+  // Services
+  createService(payload: Omit<Service, 'id' | 'updatedAt'>): Promise<Service>;
+  updateService(id: string, payload: Partial<Service>): Promise<Service>;
+  deleteService(id: string): Promise<void>;
+
+  // Portfolio
+  createPortfolio(payload: Omit<PortfolioItem, 'id' | 'updatedAt' | 'createdAt'>): Promise<PortfolioItem>;
+  updatePortfolio(id: string, payload: Partial<PortfolioItem>): Promise<PortfolioItem>;
+  deletePortfolio(id: string): Promise<void>;
+
+  // Resume
+  updateResumeMeta(payload: Partial<ResumeMeta>): Promise<ResumeMeta>;
+}
