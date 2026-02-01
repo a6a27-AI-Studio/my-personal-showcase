@@ -45,7 +45,7 @@ export default function SkillsPage() {
   if (isLoading) {
     return (
       <div className="container-page flex items-center justify-center min-h-[60vh]">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="animate-pulse text-muted-foreground">載入中...</div>
       </div>
     );
   }
@@ -53,9 +53,9 @@ export default function SkillsPage() {
   return (
     <div className="container-page">
       <div className="section-header">
-        <h1 className="text-primary mb-4">Skills & Expertise</h1>
+        <h1 className="text-primary mb-4">技能</h1>
         <p className="text-xl text-muted-foreground max-w-2xl">
-          A comprehensive overview of my technical skills and the technologies I work with.
+          我的技術專長與工具熟練度
         </p>
       </div>
 
@@ -67,7 +67,7 @@ export default function SkillsPage() {
             size="sm"
             onClick={() => setSelectedTag(null)}
           >
-            All
+            全部
           </Button>
           {allTags.map((tag) => (
             <Button
@@ -101,9 +101,8 @@ export default function SkillsPage() {
                       {[...Array(5)].map((_, i) => (
                         <div
                           key={i}
-                          className={`w-2 h-2 rounded-full ${
-                            i < skill.level ? 'bg-accent' : 'bg-muted'
-                          }`}
+                          className={`w-2 h-2 rounded-full ${i < skill.level ? 'bg-accent' : 'bg-muted'
+                            }`}
                         />
                       ))}
                     </div>
@@ -124,7 +123,7 @@ export default function SkillsPage() {
 
       {filteredSkills.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">
-          No skills found with the selected filter.
+          無符合所選篩選條件的技能
         </div>
       )}
     </div>

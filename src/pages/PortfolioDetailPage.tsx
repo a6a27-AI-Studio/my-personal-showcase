@@ -24,7 +24,7 @@ export default function PortfolioDetailPage() {
   if (isLoading) {
     return (
       <div className="container-page flex items-center justify-center min-h-[60vh]">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="animate-pulse text-muted-foreground">載入中...</div>
       </div>
     );
   }
@@ -100,7 +100,7 @@ export default function PortfolioDetailPage() {
           {/* Problem */}
           {item.problem && (
             <section>
-              <h2 className="text-2xl font-semibold mb-4">The Problem</h2>
+              <h2 className="text-2xl font-semibold">問題</h2>
               <p className="text-muted-foreground leading-relaxed">{item.problem}</p>
             </section>
           )}
@@ -108,7 +108,7 @@ export default function PortfolioDetailPage() {
           {/* Solution */}
           {item.solution && (
             <section>
-              <h2 className="text-2xl font-semibold mb-4">The Solution</h2>
+              <h2 className="text-2xl font-semibold">解決方案</h2>
               <p className="text-muted-foreground leading-relaxed">{item.solution}</p>
             </section>
           )}
@@ -116,7 +116,7 @@ export default function PortfolioDetailPage() {
           {/* Impact */}
           {item.impact.length > 0 && (
             <section>
-              <h2 className="text-2xl font-semibold mb-4">Impact & Results</h2>
+              <h3 className="text-lg font-semibold mb-3">影響</h3>
               <ul className="space-y-3">
                 {item.impact.map((result, index) => (
                   <li key={index} className="flex items-start gap-3">

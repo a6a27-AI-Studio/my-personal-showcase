@@ -65,7 +65,7 @@ export default function PortfolioListPage() {
   if (isLoading) {
     return (
       <div className="container-page flex items-center justify-center min-h-[60vh]">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="animate-pulse text-muted-foreground">載入中...</div>
       </div>
     );
   }
@@ -73,9 +73,9 @@ export default function PortfolioListPage() {
   return (
     <div className="container-page">
       <div className="section-header">
-        <h1 className="text-primary mb-4">Portfolio</h1>
+        <h1 className="text-primary mb-4">作品集</h1>
         <p className="text-xl text-muted-foreground max-w-2xl">
-          A showcase of my recent projects and the problems I've solved.
+          展示我最近的專案與解決的問題
         </p>
       </div>
 
@@ -85,7 +85,7 @@ export default function PortfolioListPage() {
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search projects..."
+            placeholder="搜尋專案..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -94,7 +94,7 @@ export default function PortfolioListPage() {
 
         {/* Tag Filter */}
         <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Filter by tag:</p>
+          <p className="text-sm font-medium text-muted-foreground">依標籤篩選：</p>
           <div className="flex flex-wrap gap-2">
             {allTags.map((tag) => (
               <Button
@@ -111,7 +111,7 @@ export default function PortfolioListPage() {
 
         {/* Tech Filter */}
         <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Filter by technology:</p>
+          <p className="text-sm font-medium text-muted-foreground">依技術篩選：</p>
           <div className="flex flex-wrap gap-2">
             {allTech.map((tech) => (
               <Button
@@ -130,7 +130,7 @@ export default function PortfolioListPage() {
         {hasActiveFilters && (
           <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground">
             <X className="mr-2 h-4 w-4" />
-            Clear filters
+            清除篩選
           </Button>
         )}
       </div>
@@ -151,8 +151,8 @@ export default function PortfolioListPage() {
       ) : (
         <div className="text-center py-12 text-muted-foreground">
           {hasActiveFilters
-            ? 'No projects match your filters.'
-            : 'No projects available yet.'}
+            ? '沒有符合的專案'
+            : '尚無作品'}
         </div>
       )}
     </div>

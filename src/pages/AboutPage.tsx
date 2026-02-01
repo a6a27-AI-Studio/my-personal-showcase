@@ -30,7 +30,7 @@ export default function AboutPage() {
   if (isLoading) {
     return (
       <div className="container-page flex items-center justify-center min-h-[60vh]">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="animate-pulse text-muted-foreground">載入中...</div>
       </div>
     );
   }
@@ -49,7 +49,7 @@ export default function AboutPage() {
       <section className="py-12 md:py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6 animate-slide-up">
-            <h1 className="text-primary leading-tight">{about.headline}</h1>
+            <h1 className="text-primary mb-4">關於我 {about.headline}</h1>
             <p className="text-xl md:text-2xl text-muted-foreground">
               {about.subheadline}
             </p>
@@ -61,7 +61,7 @@ export default function AboutPage() {
             <div className="flex flex-wrap gap-4">
               <Button asChild size="lg" className="btn-gradient">
                 <Link to="/portfolio">
-                  View My Work
+                  檢視我的作品
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -74,12 +74,12 @@ export default function AboutPage() {
                 {resume?.pdfUrl ? (
                   <a href={resume.pdfUrl} target="_blank" rel="noopener noreferrer">
                     <Download className="mr-2 h-5 w-5" />
-                    Download Resume
+                    下載履歷 PDF
                   </a>
                 ) : (
                   <span>
                     <Download className="mr-2 h-5 w-5" />
-                    Resume Unavailable
+                    履歷尚未提供
                   </span>
                 )}
               </Button>
@@ -109,7 +109,7 @@ export default function AboutPage() {
                 <div className="absolute inset-0 bg-accent/20 rounded-2xl transform rotate-6"></div>
                 <img
                   src={about.avatarUrl}
-                  alt="Profile"
+                  alt="頭像"
                   className="relative rounded-2xl shadow-xl w-full max-w-md mx-auto object-cover aspect-square"
                 />
               </div>

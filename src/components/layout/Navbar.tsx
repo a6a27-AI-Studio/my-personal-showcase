@@ -14,11 +14,11 @@ import { Menu, X, Download, User, LogOut, Shield, UserCircle } from 'lucide-reac
 import type { ResumeMeta, UserRole } from '@/types';
 
 const NAV_LINKS = [
-  { label: 'About', href: '/about' },
-  { label: 'Skills', href: '/skills' },
-  { label: 'Services', href: '/services' },
-  { label: 'Portfolio', href: '/portfolio' },
-  { label: 'Contact', href: '/contact' },
+  { label: '關於我', href: '/about' },
+  { label: '技能', href: '/skills' },
+  { label: '服務', href: '/services' },
+  { label: '作品集', href: '/portfolio' },
+  { label: '聯絡我', href: '/contact' },
 ];
 
 export function Navbar() {
@@ -47,7 +47,7 @@ export function Navbar() {
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
-          <span className="text-xl font-bold text-primary">Portfolio</span>
+          <span className="text-xl font-bold text-primary">個人官網</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -56,11 +56,10 @@ export function Navbar() {
             <Link
               key={link.href}
               to={link.href}
-              className={`text-sm font-medium transition-colors link-underline ${
-                location.pathname === link.href
+              className={`text-sm font-medium transition-colors link-underline ${location.pathname === link.href
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-primary'
-              }`}
+                }`}
             >
               {link.label}
             </Link>
@@ -68,13 +67,12 @@ export function Navbar() {
           {isAdmin && (
             <Link
               to="/admin"
-              className={`text-sm font-medium transition-colors ${
-                location.pathname.startsWith('/admin')
+              className={`text-sm font-medium transition-colors ${location.pathname.startsWith('/admin')
                   ? 'text-accent'
                   : 'text-muted-foreground hover:text-accent'
-              }`}
+                }`}
             >
-              Admin
+              管理後台
             </Link>
           )}
         </nav>
@@ -92,12 +90,12 @@ export function Navbar() {
             {resume?.pdfUrl ? (
               <a href={resume.pdfUrl} target="_blank" rel="noopener noreferrer">
                 <Download className="mr-2 h-4 w-4" />
-                Resume
+                下載履歷
               </a>
             ) : (
               <span>
                 <Download className="mr-2 h-4 w-4" />
-                Resume
+                下載履歷
               </span>
             )}
           </Button>
@@ -112,21 +110,21 @@ export function Navbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               <div className="px-2 py-1.5 text-sm font-medium text-muted-foreground">
-                Switch Role
+                切換角色
               </div>
               <DropdownMenuItem onClick={() => handleRoleSwitch('guest')}>
                 <User className="mr-2 h-4 w-4" />
-                Guest
+                訪客
                 {user?.role === 'guest' && <span className="ml-auto text-accent">✓</span>}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleRoleSwitch('user')}>
                 <UserCircle className="mr-2 h-4 w-4" />
-                User
+                使用者
                 {user?.role === 'user' && <span className="ml-auto text-accent">✓</span>}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleRoleSwitch('admin')}>
                 <Shield className="mr-2 h-4 w-4" />
-                Admin
+                管理員
                 {user?.role === 'admin' && <span className="ml-auto text-accent">✓</span>}
               </DropdownMenuItem>
               {isAuthenticated && (
@@ -134,7 +132,7 @@ export function Navbar() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout}>
                     <LogOut className="mr-2 h-4 w-4" />
-                    Logout
+                    登出
                   </DropdownMenuItem>
                 </>
               )}
@@ -162,11 +160,10 @@ export function Navbar() {
                 key={link.href}
                 to={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  location.pathname === link.href
+                className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${location.pathname === link.href
                     ? 'bg-secondary text-primary'
                     : 'text-muted-foreground hover:bg-secondary hover:text-primary'
-                }`}
+                  }`}
               >
                 {link.label}
               </Link>
@@ -175,13 +172,12 @@ export function Navbar() {
               <Link
                 to="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  location.pathname.startsWith('/admin')
+                className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${location.pathname.startsWith('/admin')
                     ? 'bg-accent/10 text-accent'
                     : 'text-muted-foreground hover:bg-secondary'
-                }`}
+                  }`}
               >
-                Admin
+                管理後台
               </Link>
             )}
             {resume?.pdfUrl && (
@@ -192,7 +188,7 @@ export function Navbar() {
                 className="block px-4 py-2 rounded-md text-sm font-medium text-accent hover:bg-secondary"
               >
                 <Download className="inline-block mr-2 h-4 w-4" />
-                Download Resume
+                下載履歷
               </a>
             )}
           </nav>

@@ -96,9 +96,9 @@ export default function ContactPage() {
   return (
     <div className="container-page">
       <div className="section-header">
-        <h1 className="text-primary mb-4">Contact</h1>
+        <h1 className="text-primary mb-4">聯絡我</h1>
         <p className="text-xl text-muted-foreground max-w-2xl">
-          Have a project in mind? Let's talk about how I can help.
+          有專案想法？讓我們談談我能如何協助
         </p>
       </div>
 
@@ -107,9 +107,9 @@ export default function ContactPage() {
         <div className="space-y-8">
           <Card>
             <CardHeader>
-              <CardTitle>Get in Touch</CardTitle>
+              <CardTitle>取得聯繫</CardTitle>
               <CardDescription>
-                I'm always open to discussing new projects, creative ideas, or opportunities.
+                我隨時歡迎討論新專案、創意想法或合作機會
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -118,7 +118,7 @@ export default function ContactPage() {
                   <Mail className="h-5 w-5 text-accent" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Email</p>
+                  <p className="text-sm text-muted-foreground">電子郵件</p>
                   <a href="mailto:hello@example.com" className="font-medium hover:text-accent">
                     hello@example.com
                   </a>
@@ -129,7 +129,7 @@ export default function ContactPage() {
                   <Phone className="h-5 w-5 text-accent" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Phone</p>
+                  <p className="text-sm text-muted-foreground">電話</p>
                   <p className="font-medium">+1 (555) 123-4567</p>
                 </div>
               </div>
@@ -138,7 +138,7 @@ export default function ContactPage() {
                   <MapPin className="h-5 w-5 text-accent" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Location</p>
+                  <p className="text-sm text-muted-foreground">地點</p>
                   <p className="font-medium">San Francisco, CA</p>
                 </div>
               </div>
@@ -151,12 +151,12 @@ export default function ContactPage() {
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold flex items-center gap-2">
               <MessageSquare className="h-6 w-6" />
-              My Messages
+              我的留言
             </h2>
             {isAuthenticated && !isCreating && !editingId && (
               <Button onClick={startCreating} size="sm">
                 <Plus className="mr-2 h-4 w-4" />
-                New Message
+                新留言
               </Button>
             )}
           </div>
@@ -166,11 +166,11 @@ export default function ContactPage() {
             <Card>
               <CardContent className="pt-6 text-center">
                 <p className="text-muted-foreground mb-4">
-                  Please log in to leave a message. Your messages are private and only visible to you.
+                  請登入後留言。您的留言僅對您可見
                 </p>
                 <Button onClick={() => login('user')}>
                   <LogIn className="mr-2 h-4 w-4" />
-                  Login as User
+                  以使用者身分登入
                 </Button>
               </CardContent>
             </Card>
@@ -183,16 +183,16 @@ export default function ContactPage() {
               {isCreating && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>New Message</CardTitle>
+                    <CardTitle>新留言</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <Input
-                      placeholder="Subject (optional)"
+                      placeholder="主題（選填）"
                       value={formData.title}
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     />
                     <Textarea
-                      placeholder="Your message..."
+                      placeholder="您的留言..."
                       rows={4}
                       value={formData.content}
                       onChange={(e) => setFormData({ ...formData, content: e.target.value })}
@@ -200,11 +200,11 @@ export default function ContactPage() {
                     <div className="flex gap-2">
                       <Button onClick={handleCreate} disabled={isSaving || !formData.content.trim()}>
                         <Save className="mr-2 h-4 w-4" />
-                        {isSaving ? 'Saving...' : 'Save'}
+                        {isSaving ? '儲存中...' : '儲存'}
                       </Button>
                       <Button variant="outline" onClick={cancelEdit}>
                         <X className="mr-2 h-4 w-4" />
-                        Cancel
+                        取消
                       </Button>
                     </div>
                   </CardContent>
@@ -213,11 +213,11 @@ export default function ContactPage() {
 
               {/* Messages List */}
               {isLoading ? (
-                <div className="text-center py-8 text-muted-foreground">Loading...</div>
+                <div className="text-center py-8 text-muted-foreground">載入中...</div>
               ) : messages.length === 0 && !isCreating ? (
                 <Card>
                   <CardContent className="pt-6 text-center text-muted-foreground">
-                    You haven't left any messages yet. Click "New Message" to start.
+                    尚無留言。點擊「新留言」開始
                   </CardContent>
                 </Card>
               ) : (
@@ -239,7 +239,7 @@ export default function ContactPage() {
                           <div className="flex gap-2">
                             <Button onClick={() => handleUpdate(message.id)} disabled={isSaving}>
                               <Save className="mr-2 h-4 w-4" />
-                              {isSaving ? 'Saving...' : 'Save'}
+                              {isSaving ? '儲存中...' : '儲存'}
                             </Button>
                             <Button variant="outline" onClick={cancelEdit}>
                               <X className="mr-2 h-4 w-4" />
