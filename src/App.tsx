@@ -20,6 +20,7 @@ import ServicesPage from "./pages/ServicesPage";
 import PortfolioListPage from "./pages/PortfolioListPage";
 import PortfolioDetailPage from "./pages/PortfolioDetailPage";
 import ContactPage from "./pages/ContactPage";
+import AuthCallback from "./pages/AuthCallback";
 import ForbiddenPage from "./pages/ForbiddenPage";
 import NotFound from "./pages/NotFound";
 
@@ -51,6 +52,7 @@ const App = () => (
                 <Route path="/portfolio" element={<PortfolioListPage />} />
                 <Route path="/portfolio/:slug" element={<PortfolioDetailPage />} />
                 <Route path="/contact" element={<ContactPage />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/403" element={<ForbiddenPage />} />
 
                 {/* Admin Routes (Protected) */}

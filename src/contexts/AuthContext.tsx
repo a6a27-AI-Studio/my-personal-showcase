@@ -1,64 +1,141 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import type { Me, UserRole } from '@/types';
-import { MockDataClient } from '@/mock/mockDataClient';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { User, Session, AuthError } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabaseClient';
 
+// AuthContext 的類型定義
 interface AuthContextType {
-  user: Me | null;
-  isLoading: boolean;
-  login: (role: UserRole) => Promise<void>;
-  logout: () => Promise<void>;
+  user: User | null;
+  session: Session | null;
+  loading: boolean;
   isAdmin: boolean;
-  isAuthenticated: boolean;
+  signInWithGoogle: () => Promise<void>;
+  signOut: () => Promise<void>;
+  checkAdminStatus: () => Promise<boolean>;
 }
 
+// 建立 Context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<Me | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+// AuthProvider 元件
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  const loadUser = useCallback(async () => {
-    try {
-      const me = await MockDataClient.getMe();
-      setUser(me);
-    } catch (error) {
-      console.error('Failed to load user:', error);
-      setUser({ id: 'guest', role: 'guest', name: 'Guest' });
-    } finally {
-      setIsLoading(false);
+  // 檢查管理員狀態
+  const checkAdminStatus = async (): Promise<boolean> => {
+    if (!user) {
+      setIsAdmin(false);
+      return false;
     }
+
+    try {
+      const { data, error } = await supabase
+        .from('admin_users')
+        .select('user_id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error checking admin status:', error);
+        setIsAdmin(false);
+        return false;
+      }
+
+      const adminStatus = !!data;
+      setIsAdmin(adminStatus);
+      return adminStatus;
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      setIsAdmin(false);
+      return false;
+    }
+  };
+
+  // Google OAuth 登入
+  const signInWithGoogle = async () => {
+    try {
+      const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${siteUrl}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error signing in with Google:', error);
+      throw error;
+    }
+  };
+
+  // 登出
+  const signOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        throw error;
+      }
+      setIsAdmin(false);
+    } catch (error) {
+      console.error('Error signing out:', error);
+      throw error;
+    }
+  };
+
+  // 監聽 Auth 狀態變化
+  useEffect(() => {
+    // 取得初始 session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // 訂閱 auth 狀態變化
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
+  // 當 user 變化時檢查 admin 狀態
   useEffect(() => {
-    loadUser();
-  }, [loadUser]);
+    if (user) {
+      checkAdminStatus();
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user]);
 
-  const login = useCallback(async (role: UserRole) => {
-    setIsLoading(true);
-    await MockDataClient.setMockRole(role);
-    await loadUser();
-  }, [loadUser]);
+  const value: AuthContextType = {
+    user,
+    session,
+    loading,
+    isAdmin,
+    signInWithGoogle,
+    signOut,
+    checkAdminStatus,
+  };
 
-  const logout = useCallback(async () => {
-    setIsLoading(true);
-    await MockDataClient.setMockRole('guest');
-    await loadUser();
-  }, [loadUser]);
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
 
-  const isAdmin = user?.role === 'admin';
-  const isAuthenticated = user?.role !== 'guest';
-
-  return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout, isAdmin, isAuthenticated }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
-
-export function useAuth() {
+// Custom Hook: useAuth
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}
+};
