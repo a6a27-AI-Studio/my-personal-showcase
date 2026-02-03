@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import type { DataClient } from '@/api/dataClient';
-import { MockDataClient } from '@/mock/mockDataClient';
+import { SupabaseDataClient } from '@/api/supabaseDataClient';
 
 const DataClientContext = createContext<DataClient | undefined>(undefined);
 
@@ -9,7 +9,7 @@ interface DataClientProviderProps {
   children: React.ReactNode;
 }
 
-export function DataClientProvider({ client = MockDataClient, children }: DataClientProviderProps) {
+export function DataClientProvider({ client = SupabaseDataClient, children }: DataClientProviderProps) {
   return (
     <DataClientContext.Provider value={client}>
       {children}

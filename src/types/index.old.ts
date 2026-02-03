@@ -107,5 +107,4 @@ export interface PortfolioFilterParams {
   q?: string;
   tag?: string;
   tech?: string;
-  includeAll?: boolean; // If true, includes drafts; otherwise only published items
 }

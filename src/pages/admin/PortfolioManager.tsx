@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDataClient } from '@/contexts/DataClientContext';
-import { AdminMockDataClient } from '@/mock/mockDataClient';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -41,7 +40,7 @@ export default function PortfolioManager() {
   const [isSaving, setIsSaving] = useState(false);
 
   const loadPortfolio = async () => {
-    const data = await AdminMockDataClient.listAllPortfolio();
+    const data = await dataClient.listPortfolio({ includeAll: true });
     setPortfolio(data);
     setIsLoading(false);
   };
@@ -105,6 +104,9 @@ export default function PortfolioManager() {
         setPortfolio([...portfolio, created]);
       }
       setIsDialogOpen(false);
+    } catch (error) {
+      console.error('Failed to save portfolio:', error);
+      alert(`Failed to save: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsSaving(false);
     }
@@ -116,9 +118,14 @@ export default function PortfolioManager() {
   };
 
   const toggleStatus = async (item: PortfolioItem) => {
-    const newStatus = item.status === 'published' ? 'draft' : 'published';
-    const updated = await dataClient.updatePortfolio(item.id, { status: newStatus });
-    setPortfolio(portfolio.map((p) => (p.id === updated.id ? updated : p)));
+    try {
+      const newStatus = item.status === 'published' ? 'draft' : 'published';
+      const updated = await dataClient.updatePortfolio(item.id, { status: newStatus });
+      setPortfolio(portfolio.map((p) => (p.id === updated.id ? updated : p)));
+    } catch (error) {
+      console.error('Failed to toggle status:', error);
+      alert(`Failed to update status: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   };
 
   const moveItem = async (item: PortfolioItem, direction: 'up' | 'down') => {
