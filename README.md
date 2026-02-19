@@ -62,7 +62,35 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### GitHub Pages (configured)
+
+This repo includes a GitHub Actions workflow at:
+
+- `.github/workflows/deploy-gh-pages.yml`
+
+It auto-deploys on every push to `main`.
+
+Before first deploy, set these repository secrets:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+
+Also make sure Supabase Auth redirect URLs include:
+
+- `https://a6a27-ai-studio.github.io/my-personal-showcase/auth/callback`
+
+And in GitHub repo settings:
+
+- **Settings → Pages → Source = GitHub Actions**
+
+Notes:
+
+- Vite `base` is set to `/my-personal-showcase/` for project pages.
+- SPA fallback is handled by copying `dist/index.html` to `dist/404.html`.
+
+### Lovable publish
+
+You can still deploy via [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) using Share -> Publish.
 
 ## Can I connect a custom domain to my Lovable project?
 
