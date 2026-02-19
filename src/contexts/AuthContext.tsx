@@ -63,7 +63,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         options: {
           redirectTo: `${siteUrl}/auth/callback`,
           queryParams: {
-            prompt: 'select_account',
+            // Google may still auto-pick a previously used account in some cases.
+            // Adding consent + select_account makes account chooser behavior more consistent.
+            prompt: 'consent select_account',
           },
         },
       });
