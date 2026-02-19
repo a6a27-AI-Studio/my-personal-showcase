@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session, AuthError } from '@supabase/supabase-js';
+import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabaseClient';
 
 // AuthContext 的類型定義
@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .from('admin_users')
         .select('user_id')
         .eq('user_id', user.id)
-        .single();
+        .limit(1);
 
       if (error) {
         console.error('Error checking admin status:', error);
@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return false;
       }
 
-      const adminStatus = !!data;
+      const adminStatus = (data?.length ?? 0) > 0;
       setIsAdmin(adminStatus);
       return adminStatus;
     } catch (error) {
@@ -87,6 +87,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw error;
       }
       setIsAdmin(false);
+
+      // Optional hard logout for Google session.
+      // Enable with VITE_GOOGLE_LOGOUT_ON_SIGNOUT=true if you want account picker every time.
+      if (import.meta.env.VITE_GOOGLE_LOGOUT_ON_SIGNOUT === 'true') {
+        const continueUrl = encodeURIComponent(window.location.origin);
+        window.location.href = `https://accounts.google.com/Logout?continue=https://appengine.google.com/_ah/logout?continue=${continueUrl}`;
+      }
     } catch (error) {
       console.error('Error signing out:', error);
       throw error;
