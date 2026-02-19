@@ -62,6 +62,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         provider: 'google',
         options: {
           redirectTo: `${siteUrl}/auth/callback`,
+          queryParams: {
+            prompt: 'select_account',
+          },
         },
       });
 
