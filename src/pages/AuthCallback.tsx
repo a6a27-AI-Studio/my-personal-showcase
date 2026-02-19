@@ -6,27 +6,40 @@ export default function AuthCallback() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Handle the OAuth callback
         const handleCallback = async () => {
             try {
-                // Supabase automatically handles the callback via onAuthStateChange
-                // We just need to wait a moment for the session to be set
+                // Fallback: some OAuth flows return tokens in URL hash.
+                // If auto-detection misses it, set session manually.
+                const hash = window.location.hash.startsWith('#')
+                    ? window.location.hash.slice(1)
+                    : window.location.hash;
+                const params = new URLSearchParams(hash);
+                const accessToken = params.get('access_token');
+                const refreshToken = params.get('refresh_token');
+
+                if (accessToken && refreshToken) {
+                    const { error } = await supabase.auth.setSession({
+                        access_token: accessToken,
+                        refresh_token: refreshToken,
+                    });
+
+                    if (error) {
+                        console.error('Error setting session from callback hash:', error);
+                    }
+                }
+
                 const { data: { session }, error } = await supabase.auth.getSession();
 
                 if (error) {
                     console.error('Error during auth callback:', error);
-                    navigate('/', { replace: true });
-                    return;
                 }
 
-                if (session) {
-                    console.log('Authentication successful!');
-                    // Redirect to home page after successful login
-                    navigate('/', { replace: true });
-                } else {
-                    // No session found, redirect to home
-                    navigate('/', { replace: true });
+                if (!session) {
+                    // Give Supabase a short moment to finish processing auth state.
+                    await new Promise((resolve) => setTimeout(resolve, 300));
                 }
+
+                navigate('/', { replace: true });
             } catch (error) {
                 console.error('Unexpected error during auth callback:', error);
                 navigate('/', { replace: true });
