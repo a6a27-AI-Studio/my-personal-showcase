@@ -5,6 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { MessageSquare, Edit, Trash2, Plus, Save, X, LogIn, Mail, MapPin, Phone, MessageCircle } from 'lucide-react';
 import type { DeleteMode, Message } from '@/types';
 
@@ -20,6 +29,8 @@ export default function ContactPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState({ title: '', content: '' });
   const [isSaving, setIsSaving] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const loadMessages = async () => {
     if (authLoading) return;
@@ -74,22 +85,8 @@ export default function ContactPage() {
     }
   };
 
-  const chooseAdminDeleteMode = (): DeleteMode | null => {
-    const pick = window.prompt('管理員刪除選項：\n1 = 軟刪除\n2 = 真刪除\n其他 = 取消', '1');
-    if (pick === '1') return 'soft';
-    if (pick === '2') return 'hard';
-    return null;
-  };
-
-  const handleDelete = async (id: string) => {
+  const performDelete = async (id: string, mode: DeleteMode) => {
     try {
-      let mode: DeleteMode = 'soft';
-      if (isAdmin) {
-        const selected = chooseAdminDeleteMode();
-        if (!selected) return;
-        mode = selected;
-      }
-
       await dataClient.deleteMyMessage(id, { mode });
 
       if (mode === 'hard' || !isAdmin) {
@@ -100,6 +97,23 @@ export default function ContactPage() {
     } catch (error) {
       console.error('Failed to delete message:', error);
     }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (isAdmin) {
+      setDeleteTargetId(id);
+      setDeleteDialogOpen(true);
+      return;
+    }
+
+    await performDelete(id, 'soft');
+  };
+
+  const handleAdminDeleteChoice = async (mode: DeleteMode) => {
+    if (!deleteTargetId) return;
+    await performDelete(deleteTargetId, mode);
+    setDeleteDialogOpen(false);
+    setDeleteTargetId(null);
   };
 
   const handleReply = async (id: string) => {
@@ -289,6 +303,28 @@ export default function ContactPage() {
           )}
         </div>
       </div>
+
+      <AlertDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setDeleteTargetId(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>管理員刪除選項</AlertDialogTitle>
+            <AlertDialogDescription>
+              你要怎麼處理這則留言？軟刪除可保留紀錄，真刪除會永久移除資料。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <Button variant="destructive" onClick={() => handleAdminDeleteChoice('hard')}>真刪除</Button>
+            <Button variant="secondary" onClick={() => handleAdminDeleteChoice('soft')}>軟刪除</Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
