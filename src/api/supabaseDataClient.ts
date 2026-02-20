@@ -17,12 +17,15 @@ import * as adminApi from './adminApi';
 async function invokeMessagesFunction(body: Record<string, unknown>) {
     const { data: { session } } = await supabase.auth.getSession();
     const accessToken = session?.access_token;
+    const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+
+    const headers: Record<string, string> = {};
+    if (anonKey) headers.apikey = anonKey;
+    if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
 
     return supabase.functions.invoke('messages', {
         body,
-        headers: accessToken
-            ? { Authorization: `Bearer ${accessToken}` }
-            : undefined,
+        headers: Object.keys(headers).length > 0 ? headers : undefined,
     });
 }
 
