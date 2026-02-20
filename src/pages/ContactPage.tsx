@@ -9,7 +9,7 @@ import { MessageSquare, Edit, Trash2, Plus, Save, X, LogIn, Mail, MapPin, Phone 
 import type { Message } from '@/types';
 
 export default function ContactPage() {
-  const { user, loading: authLoading, signInWithGoogle } = useAuth();
+  const { user, loading: authLoading, signInWithGoogle, isAdmin } = useAuth();
   const isAuthenticated = !!user;
   const dataClient = useDataClient();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -157,7 +157,7 @@ export default function ContactPage() {
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold flex items-center gap-2">
               <MessageSquare className="h-6 w-6" />
-              我的留言
+              {isAdmin ? '全部留言（管理者）' : '我的留言'}
             </h2>
             {isAuthenticated && !isCreating && !editingId && (
               <Button onClick={startCreating} size="sm">
@@ -223,7 +223,7 @@ export default function ContactPage() {
               ) : messages.length === 0 && !isCreating ? (
                 <Card>
                   <CardContent className="pt-6 text-center text-muted-foreground">
-                    尚無留言。點擊「新留言」開始
+                    {isAdmin ? '目前沒有任何使用者留言' : '尚無留言。點擊「新留言」開始'}
                   </CardContent>
                 </Card>
               ) : (

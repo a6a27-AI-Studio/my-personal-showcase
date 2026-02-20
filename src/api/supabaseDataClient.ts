@@ -236,16 +236,23 @@ export const SupabaseDataClient: DataClient = {
         console.warn('setMockRole is not supported in SupabaseDataClient');
     },
 
-    // ===== Messages (User's own only) =====
+    // ===== Messages =====
     async listMyMessages(): Promise<Message[]> {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return [];
 
-        const { data, error } = await supabase
+        const isAdmin = await adminApi.checkIsAdmin();
+
+        let query = supabase
             .from('messages')
             .select('*')
-            .eq('user_id', user.id)
             .order('created_at', { ascending: false });
+
+        if (!isAdmin) {
+            query = query.eq('user_id', user.id);
+        }
+
+        const { data, error } = await query;
 
         if (error) {
             console.error('Error fetching messages:', error);
