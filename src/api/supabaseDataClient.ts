@@ -17,10 +17,10 @@ import * as adminApi from './adminApi';
 async function getAccessToken(): Promise<string | null> {
     let { data: { session } } = await supabase.auth.getSession();
 
-    if (!session?.access_token) {
-        const { data: refreshed } = await supabase.auth.refreshSession();
-        session = refreshed.session ?? null;
-    }
+    // Force a refresh to avoid stale/invalid JWTs lingering in storage
+    // (e.g., after project auth config changes or long-lived cached sessions).
+    const { data: refreshed } = await supabase.auth.refreshSession();
+    session = refreshed.session ?? session ?? null;
 
     return session?.access_token ?? null;
 }
