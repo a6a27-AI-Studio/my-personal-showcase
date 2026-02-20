@@ -14,6 +14,18 @@ import type { DataClient } from './dataClient';
 import { supabase } from '@/lib/supabaseClient';
 import * as adminApi from './adminApi';
 
+async function invokeMessagesFunction(body: Record<string, unknown>) {
+    const { data: { session } } = await supabase.auth.getSession();
+    const accessToken = session?.access_token;
+
+    return supabase.functions.invoke('messages', {
+        body,
+        headers: accessToken
+            ? { Authorization: `Bearer ${accessToken}` }
+            : undefined,
+    });
+}
+
 /**
  * Supabase DataClient Implementation
  * 
@@ -238,9 +250,7 @@ export const SupabaseDataClient: DataClient = {
 
     // ===== Messages (via Edge Function) =====
     async listMyMessages(): Promise<Message[]> {
-        const { data, error } = await supabase.functions.invoke('messages', {
-            body: { action: 'list' },
-        });
+        const { data, error } = await invokeMessagesFunction({ action: 'list' });
 
         if (error) {
             console.error('Error fetching messages via edge function:', error);
@@ -259,9 +269,7 @@ export const SupabaseDataClient: DataClient = {
     },
 
     async createMyMessage(payload: { title?: string; content: string }): Promise<Message> {
-        const { data, error } = await supabase.functions.invoke('messages', {
-            body: { action: 'create', payload },
-        });
+        const { data, error } = await invokeMessagesFunction({ action: 'create', payload });
 
         if (error || !data?.message) {
             throw new Error('Failed to create message');
@@ -279,9 +287,7 @@ export const SupabaseDataClient: DataClient = {
     },
 
     async updateMyMessage(id: string, payload: { title?: string; content?: string }): Promise<Message> {
-        const { data, error } = await supabase.functions.invoke('messages', {
-            body: { action: 'update', id, payload },
-        });
+        const { data, error } = await invokeMessagesFunction({ action: 'update', id, payload });
 
         if (error || !data?.message) {
             throw new Error('Failed to update message');
@@ -299,9 +305,7 @@ export const SupabaseDataClient: DataClient = {
     },
 
     async deleteMyMessage(id: string): Promise<void> {
-        const { error } = await supabase.functions.invoke('messages', {
-            body: { action: 'delete', id },
-        });
+        const { error } = await invokeMessagesFunction({ action: 'delete', id });
 
         if (error) {
             throw new Error('Failed to delete message');
