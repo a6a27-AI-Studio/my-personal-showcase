@@ -5,6 +5,7 @@ import type {
   PortfolioItem,
   ResumeMeta,
   Message,
+  DeleteMode,
   Me,
   UserRole,
   SkillFilterParams,
@@ -29,7 +30,8 @@ export interface DataClient {
   listMyMessages(): Promise<Message[]>;
   createMyMessage(payload: { title?: string; content: string }): Promise<Message>;
   updateMyMessage(id: string, payload: { title?: string; content?: string }): Promise<Message>;
-  deleteMyMessage(id: string): Promise<void>;
+  replyMessage(id: string, payload: { reply: string }): Promise<Message>;
+  deleteMyMessage(id: string, options?: { mode?: DeleteMode }): Promise<void>;
 
   // ===== Admin CMS Operations =====
   // About

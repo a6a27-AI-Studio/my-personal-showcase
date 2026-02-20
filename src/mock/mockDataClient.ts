@@ -6,6 +6,7 @@ import type {
   PortfolioItem,
   ResumeMeta,
   Message,
+  DeleteMode,
   Me,
   UserRole,
   SkillFilterParams,
@@ -154,9 +155,11 @@ export const MockDataClient: DataClient = {
   async listMyMessages(): Promise<Message[]> {
     const me = await this.getMe();
     if (me.role === 'guest') return [];
-    
+
     const messages = getFromStorage<Message[]>(STORAGE_KEYS.MESSAGES, []);
-    return messages.filter(msg => msg.userId === me.id);
+    if (me.role === 'admin') return messages;
+
+    return messages.filter(msg => msg.userId === me.id && !msg.deletedAt);
   },
 
   async createMyMessage(payload: { title?: string; content: string }): Promise<Message> {
@@ -170,6 +173,10 @@ export const MockDataClient: DataClient = {
       userId: me.id,
       title: payload.title,
       content: payload.content,
+      adminReply: undefined,
+      repliedAt: undefined,
+      deletedAt: undefined,
+      deletedBy: undefined,
       createdAt: now,
       updatedAt: now,
     };
@@ -198,13 +205,51 @@ export const MockDataClient: DataClient = {
     return messages[index];
   },
 
-  async deleteMyMessage(id: string): Promise<void> {
+  async replyMessage(id: string, payload: { reply: string }): Promise<Message> {
+    const me = await this.getMe();
+    if (me.role !== 'admin') throw new Error('Admin only');
+
+    const messages = getFromStorage<Message[]>(STORAGE_KEYS.MESSAGES, []);
+    const index = messages.findIndex(msg => msg.id === id);
+    if (index === -1) throw new Error('Message not found');
+
+    messages[index] = {
+      ...messages[index],
+      adminReply: payload.reply,
+      repliedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setToStorage(STORAGE_KEYS.MESSAGES, messages);
+    return messages[index];
+  },
+
+  async deleteMyMessage(id: string, options?: { mode?: DeleteMode }): Promise<void> {
     const me = await this.getMe();
     if (me.role === 'guest') throw new Error('Must be logged in to delete messages');
-    
+
+    const mode = me.role === 'admin' ? (options?.mode ?? 'soft') : 'soft';
     const messages = getFromStorage<Message[]>(STORAGE_KEYS.MESSAGES, []);
-    const filtered = messages.filter(msg => !(msg.id === id && msg.userId === me.id));
-    setToStorage(STORAGE_KEYS.MESSAGES, filtered);
+    const index = messages.findIndex(msg => msg.id === id);
+    if (index === -1) return;
+
+    if (me.role !== 'admin' && messages[index].userId !== me.id) {
+      throw new Error('Not allowed to delete this message');
+    }
+
+    if (mode === 'hard') {
+      setToStorage(STORAGE_KEYS.MESSAGES, messages.filter(msg => msg.id !== id));
+      return;
+    }
+
+    messages[index] = {
+      ...messages[index],
+      deletedAt: new Date().toISOString(),
+      deletedBy: me.id,
+      updatedAt: new Date().toISOString(),
+    };
+
+    setToStorage(STORAGE_KEYS.MESSAGES, messages);
   },
 
   // ===== Admin CMS Operations =====

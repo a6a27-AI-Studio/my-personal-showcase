@@ -80,12 +80,18 @@ export interface ResumeMeta {
   updatedAt: string;
 }
 
+export type DeleteMode = 'soft' | 'hard';
+
 // Message (for Contact)
 export interface Message {
   id: string;
   userId: string;
   title?: string;
   content: string;
+  adminReply?: string;
+  repliedAt?: string;
+  deletedAt?: string;
+  deletedBy?: string;
   createdAt: string;
   updatedAt: string;
 }

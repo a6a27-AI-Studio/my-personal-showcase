@@ -6,6 +6,7 @@ import type {
   PortfolioItem,
   ResumeMeta,
   Message,
+  DeleteMode,
   Me,
   UserRole,
   SkillFilterParams,
@@ -108,8 +109,17 @@ export const ApiDataClient: DataClient = {
     });
   },
 
-  async deleteMyMessage(id: string): Promise<void> {
-    await fetchApi(`/messages/${id}`, { method: 'DELETE' });
+  async replyMessage(id: string, payload: { reply: string }): Promise<Message> {
+    return fetchApi<Message>(`/messages/${id}/reply`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async deleteMyMessage(id: string, options?: { mode?: DeleteMode }): Promise<void> {
+    const mode = options?.mode;
+    const query = mode ? `?mode=${mode}` : '';
+    await fetchApi(`/messages/${id}${query}`, { method: 'DELETE' });
   },
 
   // ===== Admin CMS Operations =====

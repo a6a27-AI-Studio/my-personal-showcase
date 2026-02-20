@@ -5,6 +5,7 @@ import type {
     PortfolioItem,
     ResumeMeta,
     Message,
+    DeleteMode,
     Me,
     UserRole,
     SkillFilterParams,
@@ -23,6 +24,21 @@ async function getAccessToken(): Promise<string | null> {
     session = refreshed.session ?? session ?? null;
 
     return session?.access_token ?? null;
+}
+
+function mapMessageRow(m: any): Message {
+    return {
+        id: m.id,
+        userId: m.user_id,
+        title: m.title || undefined,
+        content: m.content,
+        adminReply: m.admin_reply || undefined,
+        repliedAt: m.replied_at || undefined,
+        deletedAt: m.deleted_at || undefined,
+        deletedBy: m.deleted_by || undefined,
+        createdAt: m.created_at,
+        updatedAt: m.updated_at,
+    };
 }
 
 async function invokeMessagesFunction(body: Record<string, unknown>) {
@@ -278,14 +294,7 @@ export const SupabaseDataClient: DataClient = {
         }
 
         const rows = data?.messages || [];
-        return rows.map((m: any) => ({
-            id: m.id,
-            userId: m.user_id,
-            title: m.title || undefined,
-            content: m.content,
-            createdAt: m.created_at,
-            updatedAt: m.updated_at,
-        }));
+        return rows.map(mapMessageRow);
     },
 
     async createMyMessage(payload: { title?: string; content: string }): Promise<Message> {
@@ -295,15 +304,7 @@ export const SupabaseDataClient: DataClient = {
             throw new Error('Failed to create message');
         }
 
-        const m = data.message;
-        return {
-            id: m.id,
-            userId: m.user_id,
-            title: m.title || undefined,
-            content: m.content,
-            createdAt: m.created_at,
-            updatedAt: m.updated_at,
-        };
+        return mapMessageRow(data.message);
     },
 
     async updateMyMessage(id: string, payload: { title?: string; content?: string }): Promise<Message> {
@@ -313,19 +314,22 @@ export const SupabaseDataClient: DataClient = {
             throw new Error('Failed to update message');
         }
 
-        const m = data.message;
-        return {
-            id: m.id,
-            userId: m.user_id,
-            title: m.title || undefined,
-            content: m.content,
-            createdAt: m.created_at,
-            updatedAt: m.updated_at,
-        };
+        return mapMessageRow(data.message);
     },
 
-    async deleteMyMessage(id: string): Promise<void> {
-        const { error } = await invokeMessagesFunction({ action: 'delete', id });
+    async replyMessage(id: string, payload: { reply: string }): Promise<Message> {
+        const { data, error } = await invokeMessagesFunction({ action: 'reply', id, payload });
+
+        if (error || !data?.message) {
+            throw new Error('Failed to reply message');
+        }
+
+        return mapMessageRow(data.message);
+    },
+
+    async deleteMyMessage(id: string, options?: { mode?: DeleteMode }): Promise<void> {
+        const mode = options?.mode ?? 'soft';
+        const { error } = await invokeMessagesFunction({ action: 'delete', id, mode });
 
         if (error) {
             throw new Error('Failed to delete message');
