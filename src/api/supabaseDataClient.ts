@@ -14,18 +14,35 @@ import type { DataClient } from './dataClient';
 import { supabase } from '@/lib/supabaseClient';
 import * as adminApi from './adminApi';
 
+async function getAccessToken(): Promise<string | null> {
+    let { data: { session } } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+        const { data: refreshed } = await supabase.auth.refreshSession();
+        session = refreshed.session ?? null;
+    }
+
+    return session?.access_token ?? null;
+}
+
 async function invokeMessagesFunction(body: Record<string, unknown>) {
-    const { data: { session } } = await supabase.auth.getSession();
-    const accessToken = session?.access_token;
+    const accessToken = await getAccessToken();
     const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+
+    if (!accessToken) {
+        return {
+            data: null,
+            error: new Error('No active session token. Please sign in again.'),
+        };
+    }
 
     const headers: Record<string, string> = {};
     if (anonKey) headers.apikey = anonKey;
-    if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+    headers.Authorization = `Bearer ${accessToken}`;
 
     return supabase.functions.invoke('messages', {
         body,
-        headers: Object.keys(headers).length > 0 ? headers : undefined,
+        headers,
     });
 }
 
