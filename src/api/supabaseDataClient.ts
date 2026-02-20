@@ -236,30 +236,19 @@ export const SupabaseDataClient: DataClient = {
         console.warn('setMockRole is not supported in SupabaseDataClient');
     },
 
-    // ===== Messages =====
+    // ===== Messages (via Edge Function) =====
     async listMyMessages(): Promise<Message[]> {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return [];
-
-        const isAdmin = await adminApi.checkIsAdmin();
-
-        let query = supabase
-            .from('messages')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (!isAdmin) {
-            query = query.eq('user_id', user.id);
-        }
-
-        const { data, error } = await query;
+        const { data, error } = await supabase.functions.invoke('messages', {
+            body: { action: 'list' },
+        });
 
         if (error) {
-            console.error('Error fetching messages:', error);
+            console.error('Error fetching messages via edge function:', error);
             return [];
         }
 
-        return (data || []).map(m => ({
+        const rows = data?.messages || [];
+        return rows.map((m: any) => ({
             id: m.id,
             userId: m.user_id,
             title: m.title || undefined,
@@ -270,62 +259,49 @@ export const SupabaseDataClient: DataClient = {
     },
 
     async createMyMessage(payload: { title?: string; content: string }): Promise<Message> {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-            throw new Error('Must be logged in to create messages');
-        }
+        const { data, error } = await supabase.functions.invoke('messages', {
+            body: { action: 'create', payload },
+        });
 
-        const { data, error } = await supabase
-            .from('messages')
-            .insert({
-                user_id: user.id,
-                title: payload.title,
-                content: payload.content,
-            })
-            .select()
-            .single();
-
-        if (error || !data) {
+        if (error || !data?.message) {
             throw new Error('Failed to create message');
         }
 
+        const m = data.message;
         return {
-            id: data.id,
-            userId: data.user_id,
-            title: data.title || undefined,
-            content: data.content,
-            createdAt: data.created_at,
-            updatedAt: data.updated_at,
+            id: m.id,
+            userId: m.user_id,
+            title: m.title || undefined,
+            content: m.content,
+            createdAt: m.created_at,
+            updatedAt: m.updated_at,
         };
     },
 
     async updateMyMessage(id: string, payload: { title?: string; content?: string }): Promise<Message> {
-        const { data, error } = await supabase
-            .from('messages')
-            .update(payload)
-            .eq('id', id)
-            .select()
-            .single();
+        const { data, error } = await supabase.functions.invoke('messages', {
+            body: { action: 'update', id, payload },
+        });
 
-        if (error || !data) {
+        if (error || !data?.message) {
             throw new Error('Failed to update message');
         }
 
+        const m = data.message;
         return {
-            id: data.id,
-            userId: data.user_id,
-            title: data.title || undefined,
-            content: data.content,
-            createdAt: data.created_at,
-            updatedAt: data.updated_at,
+            id: m.id,
+            userId: m.user_id,
+            title: m.title || undefined,
+            content: m.content,
+            createdAt: m.created_at,
+            updatedAt: m.updated_at,
         };
     },
 
     async deleteMyMessage(id: string): Promise<void> {
-        const { error } = await supabase
-            .from('messages')
-            .delete()
-            .eq('id', id);
+        const { error } = await supabase.functions.invoke('messages', {
+            body: { action: 'delete', id },
+        });
 
         if (error) {
             throw new Error('Failed to delete message');
