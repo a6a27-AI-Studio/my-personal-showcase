@@ -9,7 +9,8 @@ import { MessageSquare, Edit, Trash2, Plus, Save, X, LogIn, Mail, MapPin, Phone 
 import type { Message } from '@/types';
 
 export default function ContactPage() {
-  const { user, isAuthenticated, login } = useAuth();
+  const { user, loading: authLoading, signInWithGoogle } = useAuth();
+  const isAuthenticated = !!user;
   const dataClient = useDataClient();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -19,10 +20,15 @@ export default function ContactPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const loadMessages = async () => {
+    if (authLoading) return;
+
     if (!isAuthenticated) {
+      setMessages([]);
       setIsLoading(false);
       return;
     }
+
+    setIsLoading(true);
     try {
       const data = await dataClient.listMyMessages();
       setMessages(data);
@@ -33,7 +39,7 @@ export default function ContactPage() {
 
   useEffect(() => {
     loadMessages();
-  }, [isAuthenticated, dataClient]);
+  }, [isAuthenticated, authLoading, dataClient]);
 
   const handleCreate = async () => {
     if (!formData.content.trim()) return;
@@ -168,9 +174,9 @@ export default function ContactPage() {
                 <p className="text-muted-foreground mb-4">
                   請登入後留言。您的留言僅對您可見
                 </p>
-                <Button onClick={() => login('user')}>
+                <Button onClick={() => signInWithGoogle()}>
                   <LogIn className="mr-2 h-4 w-4" />
-                  以使用者身分登入
+                  使用 Google 登入
                 </Button>
               </CardContent>
             </Card>
