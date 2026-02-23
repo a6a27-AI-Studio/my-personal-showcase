@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Local secrets / machine-specific artifacts
+client_secret*.json
+supabase/.temp/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
