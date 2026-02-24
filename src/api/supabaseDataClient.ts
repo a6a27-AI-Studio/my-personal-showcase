@@ -54,7 +54,7 @@ function mapMessageRow(m: MessageRow): Message {
     };
 }
 
-async function invokeMessagesFunction(body: Record<string, unknown>) {
+async function invokeMessagesFunction<T extends Record<string, unknown>>(body: Record<string, unknown>): Promise<{ data: T | null; error: Error | null }> {
     const accessToken = await getAccessToken();
     const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
@@ -69,10 +69,15 @@ async function invokeMessagesFunction(body: Record<string, unknown>) {
     if (anonKey) headers.apikey = anonKey;
     headers.Authorization = `Bearer ${accessToken}`;
 
-    return supabase.functions.invoke('messages', {
+    const result = await supabase.functions.invoke('messages', {
         body,
         headers,
     });
+
+    return {
+        data: (result.data as T | null) ?? null,
+        error: (result.error as Error | null) ?? null,
+    };
 }
 
 /**
@@ -296,7 +301,7 @@ export const SupabaseDataClient: DataClient = {
 
     // ===== Messages (via Edge Function) =====
     async listMyMessages(): Promise<Message[]> {
-        const { data, error } = await invokeMessagesFunction({ action: 'list' });
+        const { data, error } = await invokeMessagesFunction<{ messages?: MessageRow[] }>({ action: 'list' });
 
         if (error) {
             throw new Error(`Failed to fetch messages: ${error.message}`);
@@ -307,7 +312,7 @@ export const SupabaseDataClient: DataClient = {
     },
 
     async createMyMessage(payload: { title?: string; content: string }): Promise<Message> {
-        const { data, error } = await invokeMessagesFunction({ action: 'create', payload });
+        const { data, error } = await invokeMessagesFunction<{ message?: MessageRow }>({ action: 'create', payload });
 
         if (error || !data?.message) {
             throw new Error('Failed to create message');
@@ -317,7 +322,7 @@ export const SupabaseDataClient: DataClient = {
     },
 
     async updateMyMessage(id: string, payload: { title?: string; content?: string }): Promise<Message> {
-        const { data, error } = await invokeMessagesFunction({ action: 'update', id, payload });
+        const { data, error } = await invokeMessagesFunction<{ message?: MessageRow }>({ action: 'update', id, payload });
 
         if (error || !data?.message) {
             throw new Error('Failed to update message');
@@ -327,7 +332,7 @@ export const SupabaseDataClient: DataClient = {
     },
 
     async replyMessage(id: string, payload: { reply: string }): Promise<Message> {
-        const { data, error } = await invokeMessagesFunction({ action: 'reply', id, payload });
+        const { data, error } = await invokeMessagesFunction<{ message?: MessageRow }>({ action: 'reply', id, payload });
 
         if (error || !data?.message) {
             throw new Error('Failed to reply message');
