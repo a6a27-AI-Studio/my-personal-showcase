@@ -103,9 +103,9 @@
 - [x] API 檔案（legacy vs current）整理與註記（新增 `src/api/README.md`）
 
 ### P2-3 文件化
-- [ ] README 增加「本機啟動、部署、故障排查」
-- [ ] 新增 `docs/ARCHITECTURE.md`
-- [ ] 新增 `docs/OPERATIONS.md`（包含 OAuth 問題排查）
+- [x] README 增加「本機啟動、部署、故障排查」
+- [x] 新增 `docs/ARCHITECTURE.md`
+- [x] 新增 `docs/OPERATIONS.md`（包含 OAuth 問題排查）
 
 ---
 

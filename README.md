@@ -38,6 +38,33 @@ npm run test
 npm run build
 ```
 
+## 故障排查（快速）
+
+### 1) Google 登入在 LINE 內失敗（403 `disallowed_useragent`）
+
+原因：Google 對內建 WebView 有安全政策限制。
+
+處理：
+- 改用外部瀏覽器（Chrome/Safari）開啟再登入
+- 專案已內建 WebView 偵測與外開引導
+
+### 2) 呼叫 Supabase function 出現 401 / Invalid JWT
+
+優先檢查：
+- 前端是否已 refresh session
+- request header 是否帶 `Authorization: Bearer <token>` 與 `apikey`
+- 是否在測試舊版前端 bundle
+
+### 3) 線上部署異常
+
+- 檢查 GitHub Actions 最新 run 是否 success
+- 檢查 Pages 網址是否可回應 200
+- 重新確認 repository secrets 值是否正確
+
+更多維運細節：
+- `docs/ARCHITECTURE.md`
+- `docs/OPERATIONS.md`
+
 ## GitHub Pages 部署
 
 本專案已配置 GitHub Actions 自動部署：
