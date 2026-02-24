@@ -3,6 +3,7 @@ import type {
   About,
   Skill,
   Service,
+  Experience,
   PortfolioItem,
   ResumeMeta,
   Message,
@@ -58,6 +59,10 @@ export const ApiDataClient: DataClient = {
 
   async listServices(): Promise<Service[]> {
     return fetchApi<Service[]>('/services');
+  },
+
+  async listExperiences(): Promise<Experience[]> {
+    return fetchApi<Experience[]>('/experiences');
   },
 
   async listPortfolio(params?: PortfolioFilterParams): Promise<PortfolioItem[]> {
@@ -165,6 +170,24 @@ export const ApiDataClient: DataClient = {
 
   async deleteService(id: string): Promise<void> {
     await fetchApi(`/admin/services/${id}`, { method: 'DELETE' });
+  },
+
+  async createExperience(payload: Omit<Experience, 'id' | 'updatedAt'>): Promise<Experience> {
+    return fetchApi<Experience>('/admin/experiences', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async updateExperience(id: string, payload: Partial<Experience>): Promise<Experience> {
+    return fetchApi<Experience>(`/admin/experiences/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async deleteExperience(id: string): Promise<void> {
+    await fetchApi(`/admin/experiences/${id}`, { method: 'DELETE' });
   },
 
   async createPortfolio(payload: Omit<PortfolioItem, 'id' | 'updatedAt' | 'createdAt'>): Promise<PortfolioItem> {

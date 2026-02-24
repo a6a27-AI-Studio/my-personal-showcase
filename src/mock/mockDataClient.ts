@@ -3,6 +3,7 @@ import type {
   About,
   Skill,
   Service,
+  Experience,
   PortfolioItem,
   ResumeMeta,
   Message,
@@ -16,6 +17,7 @@ import {
   mockAbout,
   mockSkills,
   mockServices,
+  mockExperiences,
   mockPortfolio,
   mockResume,
   mockMessages,
@@ -25,6 +27,7 @@ const STORAGE_KEYS = {
   ABOUT: 'portfolio_about',
   SKILLS: 'portfolio_skills',
   SERVICES: 'portfolio_services',
+  EXPERIENCES: 'portfolio_experiences',
   PORTFOLIO: 'portfolio_items',
   RESUME: 'portfolio_resume',
   MESSAGES: 'portfolio_messages',
@@ -68,6 +71,9 @@ function initializeStorage(): void {
   if (!localStorage.getItem(STORAGE_KEYS.SERVICES)) {
     setToStorage(STORAGE_KEYS.SERVICES, mockServices);
   }
+  if (!localStorage.getItem(STORAGE_KEYS.EXPERIENCES)) {
+    setToStorage(STORAGE_KEYS.EXPERIENCES, mockExperiences);
+  }
   if (!localStorage.getItem(STORAGE_KEYS.PORTFOLIO)) {
     setToStorage(STORAGE_KEYS.PORTFOLIO, mockPortfolio);
   }
@@ -107,6 +113,11 @@ export const MockDataClient: DataClient = {
   async listServices(): Promise<Service[]> {
     const services = getFromStorage<Service[]>(STORAGE_KEYS.SERVICES, mockServices);
     return services.sort((a, b) => a.sortOrder - b.sortOrder);
+  },
+
+  async listExperiences(): Promise<Experience[]> {
+    const experiences = getFromStorage<Experience[]>(STORAGE_KEYS.EXPERIENCES, mockExperiences);
+    return experiences.sort((a, b) => a.sortOrder - b.sortOrder);
   },
 
   async listPortfolio(params?: PortfolioFilterParams): Promise<PortfolioItem[]> {
@@ -313,6 +324,33 @@ export const MockDataClient: DataClient = {
   async deleteService(id: string): Promise<void> {
     const services = getFromStorage<Service[]>(STORAGE_KEYS.SERVICES, []);
     setToStorage(STORAGE_KEYS.SERVICES, services.filter(s => s.id !== id));
+  },
+
+  async createExperience(payload: Omit<Experience, 'id' | 'updatedAt'>): Promise<Experience> {
+    const experiences = getFromStorage<Experience[]>(STORAGE_KEYS.EXPERIENCES, []);
+    const newExperience: Experience = {
+      ...payload,
+      id: generateId(),
+      updatedAt: new Date().toISOString(),
+    };
+    experiences.push(newExperience);
+    setToStorage(STORAGE_KEYS.EXPERIENCES, experiences);
+    return newExperience;
+  },
+
+  async updateExperience(id: string, payload: Partial<Experience>): Promise<Experience> {
+    const experiences = getFromStorage<Experience[]>(STORAGE_KEYS.EXPERIENCES, []);
+    const index = experiences.findIndex(e => e.id === id);
+    if (index === -1) throw new Error('Experience not found');
+
+    experiences[index] = { ...experiences[index], ...payload, updatedAt: new Date().toISOString() };
+    setToStorage(STORAGE_KEYS.EXPERIENCES, experiences);
+    return experiences[index];
+  },
+
+  async deleteExperience(id: string): Promise<void> {
+    const experiences = getFromStorage<Experience[]>(STORAGE_KEYS.EXPERIENCES, []);
+    setToStorage(STORAGE_KEYS.EXPERIENCES, experiences.filter(e => e.id !== id));
   },
 
   async createPortfolio(payload: Omit<PortfolioItem, 'id' | 'updatedAt' | 'createdAt'>): Promise<PortfolioItem> {

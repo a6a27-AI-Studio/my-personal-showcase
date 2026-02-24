@@ -2,6 +2,7 @@ import type {
     About,
     Skill,
     Service,
+    Experience,
     PortfolioItem,
     ResumeMeta,
     Message,
@@ -158,6 +159,32 @@ export const SupabaseDataClient: DataClient = {
             relatedPortfolioIds: s.related_portfolio_ids || [],
             sortOrder: s.sort_order,
             updatedAt: s.updated_at,
+        }));
+    },
+
+    async listExperiences(): Promise<Experience[]> {
+        const { data, error } = await supabase
+            .from('experiences')
+            .select('*')
+            .order('sort_order', { ascending: true });
+
+        if (error) {
+            throw new Error(`Failed to fetch experiences: ${error.message}`);
+        }
+
+        return (data || []).map(e => ({
+            id: e.id,
+            role: e.role,
+            company: e.company,
+            location: e.location || undefined,
+            startDate: e.start_date,
+            endDate: e.end_date || undefined,
+            isCurrent: e.is_current,
+            summary: e.summary,
+            highlights: e.highlights || [],
+            techStack: e.tech_stack || [],
+            sortOrder: e.sort_order,
+            updatedAt: e.updated_at,
         }));
     },
 
@@ -523,6 +550,95 @@ export const SupabaseDataClient: DataClient = {
 
         if (error) {
             throw new Error('Failed to delete service');
+        }
+    },
+
+    async createExperience(payload: Omit<Experience, 'id' | 'updatedAt'>): Promise<Experience> {
+        const { data, error } = await supabase
+            .from('experiences')
+            .insert({
+                role: payload.role,
+                company: payload.company,
+                location: payload.location,
+                start_date: payload.startDate,
+                end_date: payload.endDate,
+                is_current: payload.isCurrent,
+                summary: payload.summary,
+                highlights: payload.highlights,
+                tech_stack: payload.techStack,
+                sort_order: payload.sortOrder,
+            })
+            .select()
+            .single();
+
+        if (error || !data) {
+            throw new Error('Failed to create experience');
+        }
+
+        return {
+            id: data.id,
+            role: data.role,
+            company: data.company,
+            location: data.location || undefined,
+            startDate: data.start_date,
+            endDate: data.end_date || undefined,
+            isCurrent: data.is_current,
+            summary: data.summary,
+            highlights: data.highlights || [],
+            techStack: data.tech_stack || [],
+            sortOrder: data.sort_order,
+            updatedAt: data.updated_at,
+        };
+    },
+
+    async updateExperience(id: string, payload: Partial<Experience>): Promise<Experience> {
+        const updates: Record<string, unknown> = {};
+        if (payload.role !== undefined) updates.role = payload.role;
+        if (payload.company !== undefined) updates.company = payload.company;
+        if (payload.location !== undefined) updates.location = payload.location;
+        if (payload.startDate !== undefined) updates.start_date = payload.startDate;
+        if (payload.endDate !== undefined) updates.end_date = payload.endDate;
+        if (payload.isCurrent !== undefined) updates.is_current = payload.isCurrent;
+        if (payload.summary !== undefined) updates.summary = payload.summary;
+        if (payload.highlights !== undefined) updates.highlights = payload.highlights;
+        if (payload.techStack !== undefined) updates.tech_stack = payload.techStack;
+        if (payload.sortOrder !== undefined) updates.sort_order = payload.sortOrder;
+
+        const { data, error } = await supabase
+            .from('experiences')
+            .update(updates)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error || !data) {
+            throw new Error('Failed to update experience');
+        }
+
+        return {
+            id: data.id,
+            role: data.role,
+            company: data.company,
+            location: data.location || undefined,
+            startDate: data.start_date,
+            endDate: data.end_date || undefined,
+            isCurrent: data.is_current,
+            summary: data.summary,
+            highlights: data.highlights || [],
+            techStack: data.tech_stack || [],
+            sortOrder: data.sort_order,
+            updatedAt: data.updated_at,
+        };
+    },
+
+    async deleteExperience(id: string): Promise<void> {
+        const { error } = await supabase
+            .from('experiences')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            throw new Error('Failed to delete experience');
         }
     },
 

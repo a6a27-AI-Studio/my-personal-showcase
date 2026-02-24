@@ -1,4 +1,4 @@
-import type { About, Skill, Service, PortfolioItem, ResumeMeta, Message } from '@/types';
+import type { About, Skill, Service, Experience, PortfolioItem, ResumeMeta, Message } from '@/types';
 
 export const mockAbout: About = {
   id: 'about-1',
@@ -71,6 +71,37 @@ export const mockServices: Service[] = [
     icon: 'palette',
     relatedPortfolioIds: ['portfolio-1', 'portfolio-4'],
     sortOrder: 3,
+    updatedAt: new Date().toISOString(),
+  },
+];
+
+export const mockExperiences: Experience[] = [
+  {
+    id: 'exp-1',
+    role: 'Senior Full-Stack Engineer',
+    company: 'TechFlow Inc.',
+    location: 'Taipei, Taiwan',
+    startDate: '2022-01',
+    endDate: undefined,
+    isCurrent: true,
+    summary: '負責核心平台開發與跨團隊技術協作。',
+    highlights: ['主導核心模組重構', '建立 CI/CD 流程與測試守門'],
+    techStack: ['React', 'TypeScript', 'Node.js', 'PostgreSQL'],
+    sortOrder: 1,
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'exp-2',
+    role: 'Software Engineer',
+    company: 'DataCraft',
+    location: 'Taipei, Taiwan',
+    startDate: '2019-03',
+    endDate: '2021-12',
+    isCurrent: false,
+    summary: '開發企業內部系統與資料服務。',
+    highlights: ['優化查詢效能', '與 PM 協作落地商業需求'],
+    techStack: ['C#', '.NET', 'MSSQL'],
+    sortOrder: 2,
     updatedAt: new Date().toISOString(),
   },
 ];

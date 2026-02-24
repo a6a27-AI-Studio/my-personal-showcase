@@ -146,3 +146,43 @@
 - [x] 然後我直接開做 **P1-1 lazy loading 拆包**
 - [x] 本輪任務清單已全數完成（待後續新需求）
 
+---
+
+## 8) 新需求：經歷頁面（Public + Admin）
+
+### UX/UI 設計方向分析（先採用）
+- [x] 方案 A：卡片列表（易讀但視覺記憶點較弱）
+- [x] 方案 B：垂直時間軸（資訊層次清楚、行動版可讀性高、最符合經歷敘事）
+- [ ] 方案 C：左右交錯時間軸（視覺強，但手機可用性與維護成本較高）
+- [x] 決策：先採 **方案 B 垂直時間軸 + 卡片**（兼顧設計感與可維護性）
+
+### Stage E1 — 資料層與資料庫
+- [x] 新增 `experiences` 資料表 migration
+- [x] 建立 RLS policy（public read + admin write）
+- [x] 匯入初始經歷資料（取代測試內容）
+- [x] `supabase db push --linked` 套用到遠端
+
+### Stage E2 — 前端 Public 頁面
+- [x] 新增 `/experiences` 路由
+- [x] 新增導覽列「經歷」入口
+- [x] 新增 `ExperiencesPage`（時間軸設計 + 響應式）
+- [x] 載入/錯誤/空狀態處理
+
+### Stage E3 — Admin 管理頁面
+- [x] 新增 `/admin/experiences` 路由與 dashboard 入口
+- [x] 新增 `ExperiencesManager`（CRUD + 排序）
+- [x] 欄位編輯：role/company/location/start/end/isCurrent/summary/highlights/techStack/sortOrder
+
+### Stage E4 — DataClient 整合
+- [x] `types` 新增 `Experience`
+- [x] `DataClient` 介面新增 list + CRUD 經歷方法
+- [x] `SupabaseDataClient` 實作 list + CRUD
+- [x] `mockDataClient` / `apiDataClient` 同步介面
+
+### Stage E5 — 驗證與交付
+- [ ] `npm run test`
+- [ ] `npm run build`
+- [ ] commit + push
+- [ ] GitHub Actions success
+- [ ] live site health check (`200`)
+

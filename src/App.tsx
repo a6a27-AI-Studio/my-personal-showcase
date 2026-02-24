@@ -18,6 +18,7 @@ const Index = lazy(() => import("./pages/Index"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const SkillsPage = lazy(() => import("./pages/SkillsPage"));
 const ServicesPage = lazy(() => import("./pages/ServicesPage"));
+const ExperiencesPage = lazy(() => import("./pages/ExperiencesPage"));
 const PortfolioListPage = lazy(() => import("./pages/PortfolioListPage"));
 const PortfolioDetailPage = lazy(() => import("./pages/PortfolioDetailPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
@@ -30,6 +31,7 @@ const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AboutEditor = lazy(() => import("./pages/admin/AboutEditor"));
 const SkillsManager = lazy(() => import("./pages/admin/SkillsManager"));
 const ServicesManager = lazy(() => import("./pages/admin/ServicesManager"));
+const ExperiencesManager = lazy(() => import("./pages/admin/ExperiencesManager"));
 const PortfolioManager = lazy(() => import("./pages/admin/PortfolioManager"));
 const ResumeManager = lazy(() => import("./pages/admin/ResumeManager"));
 
@@ -57,6 +59,7 @@ const App = () => (
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/skills" element={<SkillsPage />} />
                 <Route path="/services" element={<ServicesPage />} />
+                <Route path="/experiences" element={<ExperiencesPage />} />
                 <Route path="/portfolio" element={<PortfolioListPage />} />
                 <Route path="/portfolio/:slug" element={<PortfolioDetailPage />} />
                 <Route path="/contact" element={<ContactPage />} />
@@ -93,6 +96,14 @@ const App = () => (
                   element={
                     <AdminGuard>
                       <ServicesManager />
+                    </AdminGuard>
+                  }
+                />
+                <Route
+                  path="/admin/experiences"
+                  element={
+                    <AdminGuard>
+                      <ExperiencesManager />
                     </AdminGuard>
                   }
                 />

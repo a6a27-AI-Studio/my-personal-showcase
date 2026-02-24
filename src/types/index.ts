@@ -39,6 +39,22 @@ export interface Skill {
   updatedAt: string;
 }
 
+// Experience
+export interface Experience {
+  id: string;
+  role: string;
+  company: string;
+  location?: string;
+  startDate: string; // YYYY-MM
+  endDate?: string; // YYYY-MM
+  isCurrent: boolean;
+  summary: string;
+  highlights: string[];
+  techStack: string[];
+  sortOrder: number;
+  updatedAt: string;
+}
+
 // Service
 export interface Service {
   id: string;

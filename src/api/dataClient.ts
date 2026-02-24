@@ -2,6 +2,7 @@ import type {
   About,
   Skill,
   Service,
+  Experience,
   PortfolioItem,
   ResumeMeta,
   Message,
@@ -18,6 +19,7 @@ export interface DataClient {
   getAbout(): Promise<About>;
   listSkills(params?: SkillFilterParams): Promise<Skill[]>;
   listServices(): Promise<Service[]>;
+  listExperiences(): Promise<Experience[]>;
   listPortfolio(params?: PortfolioFilterParams): Promise<PortfolioItem[]>;
   getPortfolioBySlug(slug: string): Promise<PortfolioItem | null>;
   getResume(): Promise<ResumeMeta>;
@@ -46,6 +48,11 @@ export interface DataClient {
   createService(payload: Omit<Service, 'id' | 'updatedAt'>): Promise<Service>;
   updateService(id: string, payload: Partial<Service>): Promise<Service>;
   deleteService(id: string): Promise<void>;
+
+  // Experiences
+  createExperience(payload: Omit<Experience, 'id' | 'updatedAt'>): Promise<Experience>;
+  updateExperience(id: string, payload: Partial<Experience>): Promise<Experience>;
+  deleteExperience(id: string): Promise<void>;
 
   // Portfolio
   createPortfolio(payload: Omit<PortfolioItem, 'id' | 'updatedAt' | 'createdAt'>): Promise<PortfolioItem>;

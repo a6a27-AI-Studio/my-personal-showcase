@@ -17,6 +17,7 @@ import { getExternalBrowserUrl } from '@/lib/webview';
 const NAV_LINKS = [
   { label: '關於我', href: '/about' },
   { label: '技能', href: '/skills' },
+  { label: '經歷', href: '/experiences' },
   { label: '服務', href: '/services' },
   { label: '作品集', href: '/portfolio' },
   { label: '聯絡我', href: '/contact' },

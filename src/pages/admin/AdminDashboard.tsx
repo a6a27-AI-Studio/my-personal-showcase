@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Wrench, Briefcase, FolderKanban, FileText } from 'lucide-react';
+import { User, Wrench, Briefcase, FolderKanban, FileText, Clock3 } from 'lucide-react';
 
 const ADMIN_SECTIONS = [
   {
@@ -20,6 +20,12 @@ const ADMIN_SECTIONS = [
     description: 'Configure the services you offer to clients',
     href: '/admin/services',
     icon: Briefcase,
+  },
+  {
+    title: 'Experiences',
+    description: 'Manage your work experiences and timeline',
+    href: '/admin/experiences',
+    icon: Clock3,
   },
   {
     title: 'Portfolio',
