@@ -26,7 +26,20 @@ async function getAccessToken(): Promise<string | null> {
     return session?.access_token ?? null;
 }
 
-function mapMessageRow(m: any): Message {
+type MessageRow = {
+    id: string;
+    user_id: string;
+    title?: string | null;
+    content: string;
+    admin_reply?: string | null;
+    replied_at?: string | null;
+    deleted_at?: string | null;
+    deleted_by?: string | null;
+    created_at: string;
+    updated_at: string;
+};
+
+function mapMessageRow(m: MessageRow): Message {
     return {
         id: m.id,
         userId: m.user_id,
@@ -289,7 +302,7 @@ export const SupabaseDataClient: DataClient = {
             throw new Error(`Failed to fetch messages: ${error.message}`);
         }
 
-        const rows = data?.messages || [];
+        const rows = (data?.messages || []) as MessageRow[];
         return rows.map(mapMessageRow);
     },
 
@@ -387,7 +400,7 @@ export const SupabaseDataClient: DataClient = {
     },
 
     async updateSkill(id: string, payload: Partial<Skill>): Promise<Skill> {
-        const updates: any = {};
+        const updates: Record<string, unknown> = {};
         if (payload.name !== undefined) updates.name = payload.name;
         if (payload.category !== undefined) updates.category = payload.category;
         if (payload.level !== undefined) updates.level = payload.level;
@@ -462,7 +475,7 @@ export const SupabaseDataClient: DataClient = {
     },
 
     async updateService(id: string, payload: Partial<Service>): Promise<Service> {
-        const updates: any = {};
+        const updates: Record<string, unknown> = {};
         if (payload.name !== undefined) updates.name = payload.name;
         if (payload.summary !== undefined) updates.summary = payload.summary;
         if (payload.description !== undefined) updates.description = payload.description;
@@ -553,7 +566,7 @@ export const SupabaseDataClient: DataClient = {
     },
 
     async updatePortfolio(id: string, payload: Partial<PortfolioItem>): Promise<PortfolioItem> {
-        const updates: any = {};
+        const updates: Record<string, unknown> = {};
         if (payload.slug !== undefined) updates.slug = payload.slug;
         if (payload.title !== undefined) updates.title = payload.title;
         if (payload.summary !== undefined) updates.summary = payload.summary;

@@ -93,7 +93,7 @@
 
 ### P2-1 型別收斂
 - [ ] `tsconfig` 分階段收緊：先開 `noImplicitAny`
-- [ ] 清除核心路徑的 `any`
+- [x] 清除核心路徑的 `any`（src/*.ts, src/*.tsx 已清空）
 - [ ] 補齊 DataClient 型別一致性
 
 ### P2-2 架構一致性整理

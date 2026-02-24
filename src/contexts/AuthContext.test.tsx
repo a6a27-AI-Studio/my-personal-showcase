@@ -3,6 +3,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { AuthProvider, useAuth } from './AuthContext';
 
+declare global {
+  interface Window {
+    __signInResult?: string;
+    __signOutResult?: string;
+  }
+}
+
 const mockIsInAppWebView = vi.fn();
 const mockSignInWithOAuth = vi.fn();
 const mockSignOut = vi.fn();
@@ -40,9 +47,9 @@ function TestConsumer() {
         onClick={async () => {
           try {
             await signInWithGoogle();
-            (window as any).__signInResult = 'ok';
+            window.__signInResult = 'ok';
           } catch (error) {
-            (window as any).__signInResult = error instanceof Error ? error.message : 'error';
+            window.__signInResult = error instanceof Error ? error.message : 'error';
           }
         }}
       >
@@ -51,7 +58,7 @@ function TestConsumer() {
       <button
         onClick={async () => {
           await signOut();
-          (window as any).__signOutResult = 'ok';
+          window.__signOutResult = 'ok';
         }}
       >
         sign-out
@@ -68,8 +75,8 @@ describe('AuthContext', () => {
     mockGetSession.mockReset();
     mockOnAuthStateChange.mockReset();
 
-    (window as any).__signInResult = undefined;
-    (window as any).__signOutResult = undefined;
+    window.__signInResult = undefined;
+    window.__signOutResult = undefined;
 
     mockGetSession.mockResolvedValue({ data: { session: null } });
     mockOnAuthStateChange.mockReturnValue({
@@ -91,7 +98,7 @@ describe('AuthContext', () => {
     screen.getByText('sign-in').click();
 
     await waitFor(() => {
-      expect((window as any).__signInResult).toBe('WEBVIEW_UNSUPPORTED_FOR_GOOGLE_OAUTH');
+      expect(window.__signInResult).toBe('WEBVIEW_UNSUPPORTED_FOR_GOOGLE_OAUTH');
     });
     expect(mockSignInWithOAuth).not.toHaveBeenCalled();
   });
@@ -108,7 +115,7 @@ describe('AuthContext', () => {
     screen.getByText('sign-in').click();
 
     await waitFor(() => {
-      expect((window as any).__signInResult).toBe('ok');
+      expect(window.__signInResult).toBe('ok');
     });
 
     expect(mockSignInWithOAuth).toHaveBeenCalledTimes(1);
@@ -134,7 +141,7 @@ describe('AuthContext', () => {
     screen.getByText('sign-out').click();
 
     await waitFor(() => {
-      expect((window as any).__signOutResult).toBe('ok');
+      expect(window.__signOutResult).toBe('ok');
     });
     expect(mockSignOut).toHaveBeenCalledTimes(1);
   });
