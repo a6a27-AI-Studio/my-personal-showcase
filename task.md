@@ -38,6 +38,7 @@
   - [ ] `VITE_SUPABASE_URL`
   - [ ] `VITE_SUPABASE_ANON_KEY`
 - [ ] 重新部署並驗證 OAuth callback 正常
+- [x] 建立輪替操作手冊：`docs/SECRET_ROTATION_RUNBOOK.md`
 
 **驗證標準**
 - [ ] 使用新憑證可正常登入
