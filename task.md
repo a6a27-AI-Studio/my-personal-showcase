@@ -97,8 +97,8 @@
 - [ ] 補齊 DataClient 型別一致性
 
 ### P2-2 架構一致性整理
-- [ ] 檢查 `RouteGuards.tsx` 是否仍需保留
-  - [ ] 若不用：刪除
+- [x] 檢查 `RouteGuards.tsx` 是否仍需保留
+  - [x] 若不用：刪除
   - [ ] 若要用：修正 import 與行為，統一 guard 入口
 - [ ] API 檔案（legacy vs current）整理與註記
 
