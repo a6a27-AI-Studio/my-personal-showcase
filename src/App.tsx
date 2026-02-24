@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,13 +25,13 @@ import AuthCallback from "./pages/AuthCallback";
 import ForbiddenPage from "./pages/ForbiddenPage";
 import NotFound from "./pages/NotFound";
 
-// Admin Pages
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AboutEditor from "./pages/admin/AboutEditor";
-import SkillsManager from "./pages/admin/SkillsManager";
-import ServicesManager from "./pages/admin/ServicesManager";
-import PortfolioManager from "./pages/admin/PortfolioManager";
-import ResumeManager from "./pages/admin/ResumeManager";
+// Admin Pages (lazy-loaded for smaller initial bundle)
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AboutEditor = lazy(() => import("./pages/admin/AboutEditor"));
+const SkillsManager = lazy(() => import("./pages/admin/SkillsManager"));
+const ServicesManager = lazy(() => import("./pages/admin/ServicesManager"));
+const PortfolioManager = lazy(() => import("./pages/admin/PortfolioManager"));
+const ResumeManager = lazy(() => import("./pages/admin/ResumeManager"));
 
 const queryClient = new QueryClient();
 
@@ -42,8 +43,15 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter basename={import.meta.env.BASE_URL}>
-            <Routes>
-              <Route element={<MainLayout />}>
+            <Suspense
+              fallback={
+                <div className="container-page flex items-center justify-center min-h-[40vh]">
+                  <div className="animate-pulse text-muted-foreground">Loading...</div>
+                </div>
+              }
+            >
+              <Routes>
+                <Route element={<MainLayout />}>
                 {/* Public Routes */}
                 <Route path="/" element={<Index />} />
                 <Route path="/about" element={<AboutPage />} />
@@ -105,10 +113,11 @@ const App = () => (
                   }
                 />
 
-                {/* Catch-all */}
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
+                  {/* Catch-all */}
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
