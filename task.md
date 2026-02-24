@@ -64,7 +64,7 @@
   - [x] `ServicesManager`
   - [x] `PortfolioManager`
   - [x] `ResumeManager`
-- [ ] 視情況對大頁（如 Portfolio/Contact）再拆分
+- [x] 視情況對大頁（如 Portfolio/Contact）再拆分
 - [x] 重新 build，記錄 chunk 大小前後差異
 
 **驗證標準**

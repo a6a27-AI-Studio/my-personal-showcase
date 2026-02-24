@@ -13,19 +13,19 @@ import { DataClientProvider } from "@/contexts/DataClientContext";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { AdminGuard } from "@/components/guards/AdminGuard";
 
-// Pages
-import Index from "./pages/Index";
-import AboutPage from "./pages/AboutPage";
-import SkillsPage from "./pages/SkillsPage";
-import ServicesPage from "./pages/ServicesPage";
-import PortfolioListPage from "./pages/PortfolioListPage";
-import PortfolioDetailPage from "./pages/PortfolioDetailPage";
-import ContactPage from "./pages/ContactPage";
-import AuthCallback from "./pages/AuthCallback";
-import ForbiddenPage from "./pages/ForbiddenPage";
-import NotFound from "./pages/NotFound";
+// Public Pages (lazy-loaded)
+const Index = lazy(() => import("./pages/Index"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const SkillsPage = lazy(() => import("./pages/SkillsPage"));
+const ServicesPage = lazy(() => import("./pages/ServicesPage"));
+const PortfolioListPage = lazy(() => import("./pages/PortfolioListPage"));
+const PortfolioDetailPage = lazy(() => import("./pages/PortfolioDetailPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+const ForbiddenPage = lazy(() => import("./pages/ForbiddenPage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
-// Admin Pages (lazy-loaded for smaller initial bundle)
+// Admin Pages (lazy-loaded)
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AboutEditor = lazy(() => import("./pages/admin/AboutEditor"));
 const SkillsManager = lazy(() => import("./pages/admin/SkillsManager"));
