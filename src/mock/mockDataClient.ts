@@ -112,8 +112,10 @@ export const MockDataClient: DataClient = {
   async listPortfolio(params?: PortfolioFilterParams): Promise<PortfolioItem[]> {
     let items = getFromStorage<PortfolioItem[]>(STORAGE_KEYS.PORTFOLIO, mockPortfolio);
     
-    // Only show published items on frontend
-    items = items.filter(item => item.status === 'published');
+    // Frontend default: published only. Admin/management can request includeAll.
+    if (!params?.includeAll) {
+      items = items.filter(item => item.status === 'published');
+    }
     
     if (params?.q) {
       const query = params.q.toLowerCase();

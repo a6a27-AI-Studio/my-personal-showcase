@@ -65,6 +65,7 @@ export const ApiDataClient: DataClient = {
     if (params?.q) queryParams.set('q', params.q);
     if (params?.tag) queryParams.set('tag', params.tag);
     if (params?.tech) queryParams.set('tech', params.tech);
+    if (params?.includeAll) queryParams.set('includeAll', 'true');
     return fetchApi<PortfolioItem[]>(`/portfolio?${queryParams}`);
   },
 

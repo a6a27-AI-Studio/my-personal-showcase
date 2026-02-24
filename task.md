@@ -94,7 +94,7 @@
 ### P2-1 型別收斂
 - [ ] `tsconfig` 分階段收緊：先開 `noImplicitAny`
 - [x] 清除核心路徑的 `any`（src/*.ts, src/*.tsx 已清空）
-- [ ] 補齊 DataClient 型別一致性
+- [x] 補齊 DataClient 型別一致性（Mock/Api/Supabase 對齊 `includeAll` 等契約）
 
 ### P2-2 架構一致性整理
 - [x] 檢查 `RouteGuards.tsx` 是否仍需保留
