@@ -45,12 +45,12 @@
 - [ ] `/auth/callback` 不出現授權錯誤
 
 ### P0-2 Repo 衛生
-- [ ] 確認 `git status` 無新增敏感檔
-- [ ] 確認 `.gitignore` 規則生效（`client_secret*.json`, `supabase/.temp/`）
-- [ ] 補一段 README 安全說明（不要提交機敏檔）
+- [x] 確認 `git status` 無新增敏感檔
+- [x] 確認 `.gitignore` 規則生效（`client_secret*.json`, `supabase/.temp/`）
+- [x] 補一段 README 安全說明（不要提交機敏檔）
 
 **驗證標準**
-- [ ] 新增同類檔案不會被追蹤
+- [x] 新增同類檔案不會被追蹤
 
 ---
 

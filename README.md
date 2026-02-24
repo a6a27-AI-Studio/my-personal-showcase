@@ -31,6 +31,12 @@ npm run dev
 - `VITE_SUPABASE_ANON_KEY`
 - `VITE_SITE_URL`
 
+## 安全注意事項（必讀）
+
+- **不要提交機敏檔案**（例如 `client_secret*.json`、`.env*`、`supabase/.temp/*`）
+- 若懷疑金鑰外洩，請先在雲端端輪替憑證，再更新 GitHub secrets
+- PR 前請先用 `git status` / `git diff --name-only` 確認沒有敏感檔進入變更集
+
 ## 測試與建置
 
 ```bash
