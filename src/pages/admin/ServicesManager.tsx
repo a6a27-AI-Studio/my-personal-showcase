@@ -31,11 +31,19 @@ export default function ServicesManager() {
   const [processInput, setProcessInput] = useState('');
   const [portfolioIdsInput, setPortfolioIdsInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [pageError, setPageError] = useState<string | null>(null);
 
   const loadServices = async () => {
-    const data = await dataClient.listServices();
-    setServices(data);
-    setIsLoading(false);
+    setPageError(null);
+    try {
+      const data = await dataClient.listServices();
+      setServices(data);
+    } catch (error) {
+      console.error('Failed to load services:', error);
+      setPageError('服務資料載入失敗，請稍後再試。');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -138,6 +146,12 @@ export default function ServicesManager() {
           Add Service
         </Button>
       </div>
+
+      {pageError && (
+        <div className="mb-6 rounded-md border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {pageError}
+        </div>
+      )}
 
       <div className="space-y-4">
         {services.map((service) => (

@@ -35,11 +35,19 @@ export default function SkillsManager() {
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [tagInput, setTagInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [pageError, setPageError] = useState<string | null>(null);
 
   const loadSkills = async () => {
-    const data = await dataClient.listSkills();
-    setSkills(data);
-    setIsLoading(false);
+    setPageError(null);
+    try {
+      const data = await dataClient.listSkills();
+      setSkills(data);
+    } catch (error) {
+      console.error('Failed to load skills:', error);
+      setPageError('技能資料載入失敗，請稍後再試。');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -136,6 +144,12 @@ export default function SkillsManager() {
           Add Skill
         </Button>
       </div>
+
+      {pageError && (
+        <div className="mb-6 rounded-md border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {pageError}
+        </div>
+      )}
 
       <div className="space-y-8">
         {CATEGORIES.map((cat) => {

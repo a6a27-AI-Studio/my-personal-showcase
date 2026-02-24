@@ -38,11 +38,19 @@ export default function PortfolioManager() {
   const [impactInput, setImpactInput] = useState('');
   const [linksInput, setLinksInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [pageError, setPageError] = useState<string | null>(null);
 
   const loadPortfolio = async () => {
-    const data = await dataClient.listPortfolio({ includeAll: true });
-    setPortfolio(data);
-    setIsLoading(false);
+    setPageError(null);
+    try {
+      const data = await dataClient.listPortfolio({ includeAll: true });
+      setPortfolio(data);
+    } catch (error) {
+      console.error('Failed to load portfolio:', error);
+      setPageError('作品資料載入失敗，請稍後再試。');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -169,6 +177,12 @@ export default function PortfolioManager() {
           Add Project
         </Button>
       </div>
+
+      {pageError && (
+        <div className="mb-6 rounded-md border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {pageError}
+        </div>
+      )}
 
       <div className="space-y-4">
         {portfolio.map((item) => (

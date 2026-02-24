@@ -105,8 +105,7 @@ export const SupabaseDataClient: DataClient = {
         const { data, error } = await query;
 
         if (error) {
-            console.error('Error fetching skills:', error);
-            return [];
+            throw new Error(`Failed to fetch skills: ${error.message}`);
         }
 
         return (data || []).map(s => ({
@@ -127,8 +126,7 @@ export const SupabaseDataClient: DataClient = {
             .order('sort_order', { ascending: true });
 
         if (error) {
-            console.error('Error fetching services:', error);
-            return [];
+            throw new Error(`Failed to fetch services: ${error.message}`);
         }
 
         return (data || []).map(s => ({
@@ -168,8 +166,7 @@ export const SupabaseDataClient: DataClient = {
         const { data, error } = await query;
 
         if (error) {
-            console.error('Error fetching portfolio:', error);
-            return [];
+            throw new Error(`Failed to fetch portfolio: ${error.message}`);
         }
 
         let items = (data || []).map(p => ({
@@ -289,8 +286,7 @@ export const SupabaseDataClient: DataClient = {
         const { data, error } = await invokeMessagesFunction({ action: 'list' });
 
         if (error) {
-            console.error('Error fetching messages via edge function:', error);
-            return [];
+            throw new Error(`Failed to fetch messages: ${error.message}`);
         }
 
         const rows = data?.messages || [];
