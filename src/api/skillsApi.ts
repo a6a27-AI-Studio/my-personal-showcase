@@ -24,14 +24,12 @@ export const getSkills = async (): Promise<Skill[]> => {
             .order('sort_order', { ascending: true });
 
         if (error) {
-            console.error('Error fetching skills:', error);
-            return [];
+            throw new Error(`Error fetching skills: ${error.message}`);
         }
 
         return data || [];
     } catch (error) {
-        console.error('Error fetching skills:', error);
-        return [];
+        throw new Error(`Error fetching skills: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 };
 

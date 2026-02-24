@@ -38,14 +38,12 @@ export const getPublishedPortfolios = async (): Promise<PortfolioItem[]> => {
             .order('sort_order', { ascending: true });
 
         if (error) {
-            console.error('Error fetching published portfolios:', error);
-            return [];
+            throw new Error(`Error fetching published portfolios: ${error.message}`);
         }
 
         return data || [];
     } catch (error) {
-        console.error('Error fetching published portfolios:', error);
-        return [];
+        throw new Error(`Error fetching published portfolios: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 };
 
@@ -84,14 +82,12 @@ export const getAllPortfolios = async (): Promise<PortfolioItem[]> => {
             .order('sort_order', { ascending: true });
 
         if (error) {
-            console.error('Error fetching all portfolios:', error);
-            return [];
+            throw new Error(`Error fetching all portfolios: ${error.message}`);
         }
 
         return data || [];
     } catch (error) {
-        console.error('Error fetching all portfolios:', error);
-        return [];
+        throw new Error(`Error fetching all portfolios: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 };
 
@@ -236,13 +232,11 @@ export const searchPortfolios = async (
         const { data, error } = await query;
 
         if (error) {
-            console.error('Error searching portfolios:', error);
-            return [];
+            throw new Error(`Error searching portfolios: ${error.message}`);
         }
 
         return data || [];
     } catch (error) {
-        console.error('Error searching portfolios:', error);
-        return [];
+        throw new Error(`Error searching portfolios: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 };

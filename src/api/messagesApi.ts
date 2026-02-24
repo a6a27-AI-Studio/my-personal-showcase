@@ -23,14 +23,12 @@ export const getMyMessages = async (): Promise<Message[]> => {
             .order('created_at', { ascending: false });
 
         if (error) {
-            console.error('Error fetching my messages:', error);
-            return [];
+            throw new Error(`Error fetching my messages: ${error.message}`);
         }
 
         return data || [];
     } catch (error) {
-        console.error('Error fetching my messages:', error);
-        return [];
+        throw new Error(`Error fetching my messages: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 };
 

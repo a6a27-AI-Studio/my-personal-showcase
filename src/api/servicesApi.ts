@@ -23,14 +23,12 @@ export const getServices = async (): Promise<Service[]> => {
             .order('sort_order', { ascending: true });
 
         if (error) {
-            console.error('Error fetching services:', error);
-            return [];
+            throw new Error(`Error fetching services: ${error.message}`);
         }
 
         return data || [];
     } catch (error) {
-        console.error('Error fetching services:', error);
-        return [];
+        throw new Error(`Error fetching services: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 };
 

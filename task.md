@@ -72,9 +72,9 @@
 - [ ] admin 路由可正常載入
 
 ### P1-2 錯誤可觀測化
-- [~] 將 `console.error + return []` 的靜默失敗改為可見狀態（已完成 SupabaseDataClient 的 skills/services/portfolio/messages list）
-- [~] 關鍵頁面顯示錯誤訊息（toast 或 inline alert）※ Contact/About/Skills/Services/PortfolioList + Admin Skills/Services/Portfolio 已完成
-- [~] 區分「沒資料」vs「請求失敗」※ Contact/About/Skills/Services/PortfolioList + Admin Skills/Services/Portfolio 已完成
+- [x] 將 `console.error + return []` 的靜默失敗改為可見狀態（SupabaseDataClient + legacy API list/search 已完成）
+- [x] 關鍵頁面顯示錯誤訊息（toast 或 inline alert）※ Contact/About/Skills/Services/PortfolioList + Admin Skills/Services/Portfolio 已完成
+- [~] 區分「沒資料」vs「請求失敗」※ 主要頁面已完成，待補充人為斷網/錯 token 驗證紀錄
 
 **驗證標準**
 - [ ] 人為斷網/錯 token 時，UI 可正確顯示錯誤

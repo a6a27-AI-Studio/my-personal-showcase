@@ -48,14 +48,12 @@ export const getAllResumeVersions = async (): Promise<ResumeMeta[]> => {
             .order('uploaded_at', { ascending: false });
 
         if (error) {
-            console.error('Error fetching resume versions:', error);
-            return [];
+            throw new Error(`Error fetching resume versions: ${error.message}`);
         }
 
         return data || [];
     } catch (error) {
-        console.error('Error fetching resume versions:', error);
-        return [];
+        throw new Error(`Error fetching resume versions: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 };
 
