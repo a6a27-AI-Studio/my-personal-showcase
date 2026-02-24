@@ -16,12 +16,18 @@ export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [pageError, setPageError] = useState<string | null>(null);
 
   useEffect(() => {
+    setPageError(null);
     Promise.all([dataClient.listServices(), dataClient.listPortfolio()])
       .then(([servicesData, portfolioData]) => {
         setServices(servicesData);
         setPortfolio(portfolioData);
+      })
+      .catch((error) => {
+        console.error('Failed to load services page data:', error);
+        setPageError('服務資料載入失敗，請稍後再試。');
       })
       .finally(() => setIsLoading(false));
   }, [dataClient]);
@@ -40,6 +46,11 @@ export default function ServicesPage() {
 
   return (
     <div className="container-page">
+      {pageError && (
+        <div className="mb-6 rounded-md border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {pageError}
+        </div>
+      )}
       <div className="section-header">
         <h1 className="text-primary mb-4">服務</h1>
         <p className="text-xl text-muted-foreground max-w-2xl">

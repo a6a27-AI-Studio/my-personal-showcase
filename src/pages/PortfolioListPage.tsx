@@ -10,15 +10,22 @@ export default function PortfolioListPage() {
   const dataClient = useDataClient();
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [pageError, setPageError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedTech, setSelectedTech] = useState<string | null>(null);
 
   useEffect(() => {
-    dataClient.listPortfolio().then((data) => {
-      setPortfolio(data);
-      setIsLoading(false);
-    });
+    setPageError(null);
+    dataClient.listPortfolio()
+      .then((data) => {
+        setPortfolio(data);
+      })
+      .catch((error) => {
+        console.error('Failed to load portfolio:', error);
+        setPageError('作品資料載入失敗，請稍後再試。');
+      })
+      .finally(() => setIsLoading(false));
   }, [dataClient]);
 
   const allTags = useMemo(
@@ -72,6 +79,11 @@ export default function PortfolioListPage() {
 
   return (
     <div className="container-page">
+      {pageError && (
+        <div className="mb-6 rounded-md border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {pageError}
+        </div>
+      )}
       <div className="section-header">
         <h1 className="text-primary mb-4">作品集</h1>
         <p className="text-xl text-muted-foreground max-w-2xl">

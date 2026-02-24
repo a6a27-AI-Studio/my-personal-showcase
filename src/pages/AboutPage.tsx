@@ -17,12 +17,18 @@ export default function AboutPage() {
   const [about, setAbout] = useState<About | null>(null);
   const [resume, setResume] = useState<ResumeMeta | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [pageError, setPageError] = useState<string | null>(null);
 
   useEffect(() => {
+    setPageError(null);
     Promise.all([dataClient.getAbout(), dataClient.getResume()])
       .then(([aboutData, resumeData]) => {
         setAbout(aboutData);
         setResume(resumeData);
+      })
+      .catch((error) => {
+        console.error('Failed to load about page data:', error);
+        setPageError('頁面資料載入失敗，請稍後再試。');
       })
       .finally(() => setIsLoading(false));
   }, [dataClient]);
@@ -31,6 +37,14 @@ export default function AboutPage() {
     return (
       <div className="container-page flex items-center justify-center min-h-[60vh]">
         <div className="animate-pulse text-muted-foreground">載入中...</div>
+      </div>
+    );
+  }
+
+  if (pageError) {
+    return (
+      <div className="container-page text-center">
+        <p className="text-destructive">{pageError}</p>
       </div>
     );
   }

@@ -19,13 +19,20 @@ export default function SkillsPage() {
   const dataClient = useDataClient();
   const [skills, setSkills] = useState<Skill[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [pageError, setPageError] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   useEffect(() => {
-    dataClient.listSkills().then((data) => {
-      setSkills(data);
-      setIsLoading(false);
-    });
+    setPageError(null);
+    dataClient.listSkills()
+      .then((data) => {
+        setSkills(data);
+      })
+      .catch((error) => {
+        console.error('Failed to load skills:', error);
+        setPageError('技能資料載入失敗，請稍後再試。');
+      })
+      .finally(() => setIsLoading(false));
   }, [dataClient]);
 
   const allTags = Array.from(new Set(skills.flatMap((s) => s.tags)));
@@ -52,6 +59,11 @@ export default function SkillsPage() {
 
   return (
     <div className="container-page">
+      {pageError && (
+        <div className="mb-6 rounded-md border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {pageError}
+        </div>
+      )}
       <div className="section-header">
         <h1 className="text-primary mb-4">技能</h1>
         <p className="text-xl text-muted-foreground max-w-2xl">
