@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { MessageSquare, Edit, Trash2, Plus, Save, X, LogIn, Mail, MapPin, Phone, MessageCircle } from 'lucide-react';
 import type { DeleteMode, Message } from '@/types';
+import { getExternalBrowserUrl } from '@/lib/webview';
 
 export default function ContactPage() {
   const { user, loading: authLoading, signInWithGoogle, isAdmin } = useAuth();
@@ -173,6 +174,26 @@ export default function ContactPage() {
     setFormData({ title: '', content: '' });
   };
 
+  const handleSignIn = async () => {
+    setPageError(null);
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      if (error instanceof Error && error.message === 'WEBVIEW_UNSUPPORTED_FOR_GOOGLE_OAUTH') {
+        setPageError('你目前在內建瀏覽器中，Google 登入會被封鎖。正在嘗試用外部瀏覽器開啟...');
+        const externalUrl = getExternalBrowserUrl(window.location.href);
+        const opened = window.open(externalUrl, '_blank');
+        if (!opened) {
+          window.location.href = externalUrl;
+        }
+        return;
+      }
+
+      console.error('Sign-in failed:', error);
+      setPageError('登入失敗，請稍後再試。');
+    }
+  };
+
   return (
     <div className="container-page">
       <div className="section-header">
@@ -226,7 +247,7 @@ export default function ContactPage() {
             <Card>
               <CardContent className="pt-6 text-center">
                 <p className="text-muted-foreground mb-4">請登入後留言。您的留言僅對您可見</p>
-                <Button onClick={() => signInWithGoogle()}><LogIn className="mr-2 h-4 w-4" />使用 Google 登入</Button>
+                <Button onClick={handleSignIn}><LogIn className="mr-2 h-4 w-4" />使用 Google 登入</Button>
               </CardContent>
             </Card>
           )}

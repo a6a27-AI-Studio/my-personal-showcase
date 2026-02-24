@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabaseClient';
+import { isInAppWebView } from '@/lib/webview';
 
 // AuthContext 的類型定義
 interface AuthContextType {
@@ -56,6 +57,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Google OAuth 登入
   const signInWithGoogle = async () => {
     try {
+      if (isInAppWebView()) {
+        throw new Error('WEBVIEW_UNSUPPORTED_FOR_GOOGLE_OAUTH');
+      }
+
       const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
 
       const { error } = await supabase.auth.signInWithOAuth({

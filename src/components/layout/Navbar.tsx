@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Menu, X, Download, User, LogOut, Shield, UserCircle } from 'lucide-react';
 import type { ResumeMeta } from '@/types';
+import { getExternalBrowserUrl } from '@/lib/webview';
 
 const NAV_LINKS = [
   { label: '關於我', href: '/about' },
@@ -31,6 +32,23 @@ export function Navbar() {
   useEffect(() => {
     dataClient.getResume().then(setResume);
   }, [dataClient]);
+
+  const handleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      if (error instanceof Error && error.message === 'WEBVIEW_UNSUPPORTED_FOR_GOOGLE_OAUTH') {
+        const externalUrl = getExternalBrowserUrl(window.location.href);
+        const opened = window.open(externalUrl, '_blank');
+        if (!opened) {
+          window.location.href = externalUrl;
+        }
+        return;
+      }
+      console.error('Sign-in failed:', error);
+      alert('登入失敗，請稍後再試。');
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -131,7 +149,7 @@ export function Navbar() {
             <Button
               variant="default"
               size="sm"
-              onClick={() => signInWithGoogle()}
+              onClick={handleSignIn}
               className="gap-2"
             >
               <User className="h-4 w-4" />
