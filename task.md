@@ -73,8 +73,8 @@
 
 ### P1-2 錯誤可觀測化
 - [ ] 將 `console.error + return []` 的靜默失敗改為可見狀態
-- [ ] 關鍵頁面顯示錯誤訊息（toast 或 inline alert）
-- [ ] 區分「沒資料」vs「請求失敗」
+- [~] 關鍵頁面顯示錯誤訊息（toast 或 inline alert）※ ContactPage 已完成
+- [~] 區分「沒資料」vs「請求失敗」※ ContactPage 已完成
 
 **驗證標準**
 - [ ] 人為斷網/錯 token 時，UI 可正確顯示錯誤

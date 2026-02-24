@@ -29,6 +29,7 @@ export default function ContactPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState({ title: '', content: '' });
   const [isSaving, setIsSaving] = useState(false);
+  const [pageError, setPageError] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
@@ -42,9 +43,13 @@ export default function ContactPage() {
     }
 
     setIsLoading(true);
+    setPageError(null);
     try {
       const data = await dataClient.listMyMessages();
       setMessages(data);
+    } catch (error) {
+      console.error('Failed to load messages:', error);
+      setPageError('留言載入失敗，請稍後再試。');
     } finally {
       setIsLoading(false);
     }
@@ -57,6 +62,7 @@ export default function ContactPage() {
   const handleCreate = async () => {
     if (!formData.content.trim()) return;
     setIsSaving(true);
+    setPageError(null);
     try {
       const newMessage = await dataClient.createMyMessage({
         title: formData.title || undefined,
@@ -65,6 +71,9 @@ export default function ContactPage() {
       setMessages([newMessage, ...messages]);
       setFormData({ title: '', content: '' });
       setIsCreating(false);
+    } catch (error) {
+      console.error('Failed to create message:', error);
+      setPageError('留言送出失敗，請稍後再試。');
     } finally {
       setIsSaving(false);
     }
@@ -72,6 +81,7 @@ export default function ContactPage() {
 
   const handleUpdate = async (id: string) => {
     setIsSaving(true);
+    setPageError(null);
     try {
       const updated = await dataClient.updateMyMessage(id, {
         title: formData.title || undefined,
@@ -80,12 +90,16 @@ export default function ContactPage() {
       setMessages(messages.map((m) => (m.id === id ? updated : m)));
       setEditingId(null);
       setFormData({ title: '', content: '' });
+    } catch (error) {
+      console.error('Failed to update message:', error);
+      setPageError('留言更新失敗，請稍後再試。');
     } finally {
       setIsSaving(false);
     }
   };
 
   const performDelete = async (id: string, mode: DeleteMode) => {
+    setPageError(null);
     try {
       await dataClient.deleteMyMessage(id, { mode });
 
@@ -96,6 +110,7 @@ export default function ContactPage() {
       }
     } catch (error) {
       console.error('Failed to delete message:', error);
+      setPageError('留言刪除失敗，請稍後再試。');
     }
   };
 
@@ -119,11 +134,15 @@ export default function ContactPage() {
   const handleReply = async (id: string) => {
     if (!replyText.trim()) return;
     setIsSaving(true);
+    setPageError(null);
     try {
       const updated = await dataClient.replyMessage(id, { reply: replyText.trim() });
       setMessages(messages.map((m) => (m.id === id ? updated : m)));
       setReplyingId(null);
       setReplyText('');
+    } catch (error) {
+      console.error('Failed to reply message:', error);
+      setPageError('回覆留言失敗，請稍後再試。');
     } finally {
       setIsSaving(false);
     }
@@ -214,6 +233,12 @@ export default function ContactPage() {
 
           {isAuthenticated && (
             <>
+              {pageError && (
+                <Card className="border-destructive/40 bg-destructive/5">
+                  <CardContent className="pt-6 text-sm text-destructive">{pageError}</CardContent>
+                </Card>
+              )}
+
               {isCreating && (
                 <Card>
                   <CardHeader><CardTitle>新留言</CardTitle></CardHeader>
