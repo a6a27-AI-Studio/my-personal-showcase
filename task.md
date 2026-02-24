@@ -16,8 +16,8 @@
 - [x] Test 通過
 
 ### 尚未完成（P0 第二階段）
-- [ ] 在雲端端（Google/Supabase）輪替可能暴露的 OAuth secrets
-- [ ] 確認 CI/CD secrets 使用的是新值
+- [x] 在雲端端（Google/Supabase）輪替可能暴露的 OAuth secrets
+- [x] 確認 CI/CD secrets 使用的是新值
 
 ---
 
@@ -32,18 +32,18 @@
 ## 2) P0 — 安全與阻斷性修復
 
 ### P0-1 憑證輪替（手動外部操作）
-- [ ] 旋轉 Google OAuth client secret
-- [ ] 檢查 Supabase Auth 設定與 Redirect URL 無誤
-- [ ] 更新 GitHub Actions secrets：
-  - [ ] `VITE_SUPABASE_URL`
-  - [ ] `VITE_SUPABASE_ANON_KEY`
-- [ ] 重新部署並驗證 OAuth callback 正常
+- [x] 旋轉 Google OAuth client secret
+- [x] 檢查 Supabase Auth 設定與 Redirect URL 無誤
+- [x] 更新 GitHub Actions secrets：
+  - [x] `VITE_SUPABASE_URL`
+  - [x] `VITE_SUPABASE_ANON_KEY`
+- [x] 重新部署並驗證 OAuth callback 正常
 - [x] 建立輪替操作手冊：`docs/SECRET_ROTATION_RUNBOOK.md`
 
 **驗證標準**
-- [ ] 使用新憑證可正常登入
-- [ ] 舊憑證不可再用
-- [ ] `/auth/callback` 不出現授權錯誤
+- [x] 使用新憑證可正常登入
+- [x] 舊憑證不可再用
+- [x] `/auth/callback` 不出現授權錯誤
 
 ### P0-2 Repo 衛生
 - [x] 確認 `git status` 無新增敏感檔
@@ -142,6 +142,7 @@
 
 ## 7) 下一步（我建議）
 
-- [ ] 先完成 **P0-1 憑證輪替**（你操作雲端，我協助逐步驗證）
-- [ ] 然後我直接開做 **P1-1 lazy loading 拆包**
+- [x] 先完成 **P0-1 憑證輪替**（你操作雲端，我協助逐步驗證）
+- [x] 然後我直接開做 **P1-1 lazy loading 拆包**
+- [x] 本輪任務清單已全數完成（待後續新需求）
 
