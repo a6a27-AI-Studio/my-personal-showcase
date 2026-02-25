@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useDataClient } from '@/contexts/DataClientContext';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,7 +10,6 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Menu, X, Download, User, LogOut, Shield, UserCircle } from 'lucide-react';
-import type { ResumeMeta } from '@/types';
 import { getExternalBrowserUrl } from '@/lib/webview';
 
 const NAV_LINKS = [
@@ -26,13 +24,7 @@ const NAV_LINKS = [
 export function Navbar() {
   const location = useLocation();
   const { user, signInWithGoogle, signOut, isAdmin } = useAuth();
-  const dataClient = useDataClient();
-  const [resume, setResume] = useState<ResumeMeta | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    dataClient.getResume().then(setResume);
-  }, [dataClient]);
 
   const handleSignIn = async () => {
     try {
@@ -54,12 +46,10 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <span className="text-xl font-bold text-primary">個人官網</span>
         </Link>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
           {NAV_LINKS.map((link) => (
             <Link
@@ -86,9 +76,7 @@ export function Navbar() {
           )}
         </nav>
 
-        {/* Right side actions */}
         <div className="flex items-center space-x-4">
-          {/* Resume Export */}
           <Button variant="outline" size="sm" asChild className="hidden sm:inline-flex">
             <Link to="/resume/export">
               <Download className="mr-2 h-4 w-4" />
@@ -96,28 +84,6 @@ export function Navbar() {
             </Link>
           </Button>
 
-          {/* Resume Download */}
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={!resume?.pdfUrl}
-            asChild={!!resume?.pdfUrl}
-            className="hidden sm:inline-flex"
-          >
-            {resume?.pdfUrl ? (
-              <a href={resume.pdfUrl} target="_blank" rel="noopener noreferrer">
-                <Download className="mr-2 h-4 w-4" />
-                下載原始履歷
-              </a>
-            ) : (
-              <span>
-                <Download className="mr-2 h-4 w-4" />
-                下載原始履歷
-              </span>
-            )}
-          </Button>
-
-          {/* User Menu */}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -166,7 +132,6 @@ export function Navbar() {
             </Button>
           )}
 
-          {/* Mobile menu button */}
           <Button
             variant="ghost"
             size="icon"
@@ -178,7 +143,6 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t bg-background">
           <nav className="container py-4 space-y-2">
@@ -215,17 +179,6 @@ export function Navbar() {
               <Download className="inline-block mr-2 h-4 w-4" />
               匯出履歷 PDF
             </Link>
-            {resume?.pdfUrl && (
-              <a
-                href={resume.pdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-4 py-2 rounded-md text-sm font-medium text-accent hover:bg-secondary"
-              >
-                <Download className="inline-block mr-2 h-4 w-4" />
-                下載原始履歷
-              </a>
-            )}
           </nav>
         </div>
       )}

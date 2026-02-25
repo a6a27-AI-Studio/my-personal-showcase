@@ -183,15 +183,15 @@
 ### Stage R5 — QA 與交付驗收
 - [x] 本機測試：`npm run test`
 - [x] 本機建置：`npm run build`
-- [ ] 版面驗收：Chrome PDF 匯出（桌機/手機 viewport）
-- [ ] 可讀性驗收：5 秒掃描能看懂核心履歷（角色、年資、技能、代表作）
-- [ ] commit + push + GitHub Actions success + live health check
+- [x] 版面驗收：Chrome PDF 匯出（桌機/手機 viewport）
+- [x] 可讀性驗收：5 秒掃描能看懂核心履歷（角色、年資、技能、代表作）
+- [x] commit + push + GitHub Actions success + live health check
 
 ### 驗收標準（Done Definition）
-- [ ] 面試官在 30 秒內可掌握：你是誰、做過什麼、擅長什麼
-- [ ] PDF 在 A4 列印與螢幕閱讀皆清楚（無版面破碎）
-- [ ] 匯出流程 3 步內完成（進入頁面 → 選模板 → 下載）
-- [ ] Admin 可調整輸出內容，不需改程式碼
+- [x] 面試官在 30 秒內可掌握：你是誰、做過什麼、擅長什麼
+- [x] PDF 在 A4 列印與螢幕閱讀皆清楚（無版面破碎）
+- [x] 匯出流程 3 步內完成（進入頁面 → 選模板 → 下載）
+- [x] Admin 可調整輸出內容，不需改程式碼
 
 ---
 
