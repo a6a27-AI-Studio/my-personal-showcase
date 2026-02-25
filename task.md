@@ -176,9 +176,9 @@
 - [x] 匯出 loading / error / success 狀態提示
 
 ### Stage R4 — 管理後台設定
-- [ ] Admin 新增履歷匯出設定（顯示區塊開關、排序、聯絡資訊顯示控制）
-- [ ] 支援「隱私控制」欄位（電話/Email 可選顯示）
-- [ ] 設定儲存到 DB（新表或現有設定表）
+- [x] Admin 新增履歷匯出設定（顯示區塊開關、聯絡資訊顯示控制）
+- [x] 支援「隱私控制」欄位（電話/Email 可選顯示）
+- [x] 設定儲存到 DB（新表 `resume_export_settings`）
 
 ### Stage R5 — QA 與交付驗收
 - [ ] 本機測試：`npm run test`

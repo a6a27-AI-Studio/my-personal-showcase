@@ -6,6 +6,7 @@ import type {
   Experience,
   PortfolioItem,
   ResumeMeta,
+  ResumeExportSettings,
   Message,
   DeleteMode,
   Me,
@@ -20,6 +21,7 @@ import {
   mockExperiences,
   mockPortfolio,
   mockResume,
+  mockResumeExportSettings,
   mockMessages,
 } from './mockData';
 
@@ -30,6 +32,7 @@ const STORAGE_KEYS = {
   EXPERIENCES: 'portfolio_experiences',
   PORTFOLIO: 'portfolio_items',
   RESUME: 'portfolio_resume',
+  RESUME_EXPORT_SETTINGS: 'portfolio_resume_export_settings',
   MESSAGES: 'portfolio_messages',
   CURRENT_ROLE: 'portfolio_current_role',
   CURRENT_USER: 'portfolio_current_user',
@@ -79,6 +82,9 @@ function initializeStorage(): void {
   }
   if (!localStorage.getItem(STORAGE_KEYS.RESUME)) {
     setToStorage(STORAGE_KEYS.RESUME, mockResume);
+  }
+  if (!localStorage.getItem(STORAGE_KEYS.RESUME_EXPORT_SETTINGS)) {
+    setToStorage(STORAGE_KEYS.RESUME_EXPORT_SETTINGS, mockResumeExportSettings);
   }
   if (!localStorage.getItem(STORAGE_KEYS.MESSAGES)) {
     setToStorage(STORAGE_KEYS.MESSAGES, mockMessages);
@@ -386,6 +392,24 @@ export const MockDataClient: DataClient = {
     const current = await this.getResume();
     const updated = { ...current, ...payload, updatedAt: new Date().toISOString() };
     setToStorage(STORAGE_KEYS.RESUME, updated);
+    return updated;
+  },
+
+  async getResumeExportSettings(): Promise<ResumeExportSettings> {
+    return getFromStorage<ResumeExportSettings>(
+      STORAGE_KEYS.RESUME_EXPORT_SETTINGS,
+      mockResumeExportSettings,
+    );
+  },
+
+  async updateResumeExportSettings(payload: Partial<ResumeExportSettings>): Promise<ResumeExportSettings> {
+    const current = await this.getResumeExportSettings();
+    const updated: ResumeExportSettings = {
+      ...current,
+      ...payload,
+      updatedAt: new Date().toISOString(),
+    };
+    setToStorage(STORAGE_KEYS.RESUME_EXPORT_SETTINGS, updated);
     return updated;
   },
 };

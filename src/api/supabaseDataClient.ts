@@ -5,6 +5,7 @@ import type {
     Experience,
     PortfolioItem,
     ResumeMeta,
+    ResumeExportSettings,
     Message,
     DeleteMode,
     Me,
@@ -769,6 +770,75 @@ export const SupabaseDataClient: DataClient = {
             id: data.id,
             version: data.version,
             pdfUrl: data.pdf_url,
+            updatedAt: data.updated_at,
+        };
+    },
+
+    async getResumeExportSettings(): Promise<ResumeExportSettings> {
+        const { data, error } = await supabase
+            .from('resume_export_settings')
+            .select('*')
+            .limit(1)
+            .maybeSingle();
+
+        if (error || !data) {
+            throw new Error('Failed to fetch resume export settings');
+        }
+
+        return {
+            id: data.id,
+            showHeader: data.show_header,
+            showSummary: data.show_summary,
+            showExperiences: data.show_experiences,
+            showSkills: data.show_skills,
+            showProjects: data.show_projects,
+            showContact: data.show_contact,
+            showEmail: data.show_email,
+            showPhone: data.show_phone,
+            contactEmail: data.contact_email || undefined,
+            contactPhone: data.contact_phone || undefined,
+            updatedAt: data.updated_at,
+        };
+    },
+
+    async updateResumeExportSettings(payload: Partial<ResumeExportSettings>): Promise<ResumeExportSettings> {
+        const current = await this.getResumeExportSettings();
+
+        const updates: Record<string, unknown> = {};
+        if (payload.showHeader !== undefined) updates.show_header = payload.showHeader;
+        if (payload.showSummary !== undefined) updates.show_summary = payload.showSummary;
+        if (payload.showExperiences !== undefined) updates.show_experiences = payload.showExperiences;
+        if (payload.showSkills !== undefined) updates.show_skills = payload.showSkills;
+        if (payload.showProjects !== undefined) updates.show_projects = payload.showProjects;
+        if (payload.showContact !== undefined) updates.show_contact = payload.showContact;
+        if (payload.showEmail !== undefined) updates.show_email = payload.showEmail;
+        if (payload.showPhone !== undefined) updates.show_phone = payload.showPhone;
+        if (payload.contactEmail !== undefined) updates.contact_email = payload.contactEmail;
+        if (payload.contactPhone !== undefined) updates.contact_phone = payload.contactPhone;
+
+        const { data, error } = await supabase
+            .from('resume_export_settings')
+            .update(updates)
+            .eq('id', current.id)
+            .select('*')
+            .single();
+
+        if (error || !data) {
+            throw new Error('Failed to update resume export settings');
+        }
+
+        return {
+            id: data.id,
+            showHeader: data.show_header,
+            showSummary: data.show_summary,
+            showExperiences: data.show_experiences,
+            showSkills: data.show_skills,
+            showProjects: data.show_projects,
+            showContact: data.show_contact,
+            showEmail: data.show_email,
+            showPhone: data.show_phone,
+            contactEmail: data.contact_email || undefined,
+            contactPhone: data.contact_phone || undefined,
             updatedAt: data.updated_at,
         };
     },

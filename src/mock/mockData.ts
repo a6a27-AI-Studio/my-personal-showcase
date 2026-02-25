@@ -1,4 +1,4 @@
-import type { About, Skill, Service, Experience, PortfolioItem, ResumeMeta, Message } from '@/types';
+import type { About, Skill, Service, Experience, PortfolioItem, ResumeMeta, ResumeExportSettings, Message } from '@/types';
 
 export const mockAbout: About = {
   id: 'about-1',
@@ -215,6 +215,21 @@ export const mockResume: ResumeMeta = {
   id: 'resume-1',
   version: '2024.01',
   pdfUrl: 'https://example.com/resume.pdf',
+  updatedAt: new Date().toISOString(),
+};
+
+export const mockResumeExportSettings: ResumeExportSettings = {
+  id: 'resume-export-settings-1',
+  showHeader: true,
+  showSummary: true,
+  showExperiences: true,
+  showSkills: true,
+  showProjects: true,
+  showContact: true,
+  showEmail: false,
+  showPhone: false,
+  contactEmail: '',
+  contactPhone: '',
   updatedAt: new Date().toISOString(),
 };
 

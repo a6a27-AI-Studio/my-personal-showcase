@@ -96,6 +96,21 @@ export interface ResumeMeta {
   updatedAt: string;
 }
 
+export interface ResumeExportSettings {
+  id: string;
+  showHeader: boolean;
+  showSummary: boolean;
+  showExperiences: boolean;
+  showSkills: boolean;
+  showProjects: boolean;
+  showContact: boolean;
+  showEmail: boolean;
+  showPhone: boolean;
+  contactEmail?: string;
+  contactPhone?: string;
+  updatedAt: string;
+}
+
 export type DeleteMode = 'soft' | 'hard';
 
 // Message (for Contact)

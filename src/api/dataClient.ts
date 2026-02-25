@@ -5,6 +5,7 @@ import type {
   Experience,
   PortfolioItem,
   ResumeMeta,
+  ResumeExportSettings,
   Message,
   DeleteMode,
   Me,
@@ -61,4 +62,6 @@ export interface DataClient {
 
   // Resume
   updateResumeMeta(payload: Partial<ResumeMeta>): Promise<ResumeMeta>;
+  getResumeExportSettings(): Promise<ResumeExportSettings>;
+  updateResumeExportSettings(payload: Partial<ResumeExportSettings>): Promise<ResumeExportSettings>;
 }

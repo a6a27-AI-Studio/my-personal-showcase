@@ -74,7 +74,7 @@ export default function ResumeExportPage() {
     );
   }
 
-  const { profile, core } = data;
+  const { profile, core, sections, settings } = data;
 
   return (
     <div className="bg-muted/30 min-h-screen py-8 print:bg-white print:py-0">
@@ -124,23 +124,30 @@ export default function ResumeExportPage() {
       )}
 
       <article className={`print-wrap mx-auto w-full max-w-[210mm] bg-white border shadow-sm px-8 py-8 ${template === 'brand' ? 'border-primary/20' : ''}`}>
+        {sections.header && (
         <header className={`border-b pb-4 mb-4 ${template === 'brand' ? 'bg-primary/5 -mx-8 px-8 pt-6' : ''}`}>
           <h1 className="text-3xl font-bold text-primary">{profile.fullName}</h1>
           <p className="text-lg mt-1">{profile.title}</p>
           <p className="text-sm text-muted-foreground mt-2">
             {profile.location ? `${profile.location} · ` : ''}
             {core.about.links.map((l) => l.url).slice(0, 2).join(' · ')}
+            {sections.contact && settings.showEmail && profile.contactEmail ? ` · ${profile.contactEmail}` : ''}
+            {sections.contact && settings.showPhone && profile.contactPhone ? ` · ${profile.contactPhone}` : ''}
           </p>
           <p className="text-xs text-muted-foreground mt-2">
             模板：{template === 'quick' ? 'Quick Scan（快速審閱）' : 'Brand（品牌敘事）'}
           </p>
         </header>
+        )}
 
+        {sections.summary && (
         <section className="mb-5">
           <h2 className="text-base font-semibold uppercase tracking-wide mb-2">Summary</h2>
           <p className="text-sm leading-relaxed text-foreground/90">{core.about.bio || core.about.subheadline}</p>
         </section>
+        )}
 
+        {sections.experiences && (
         <section className="mb-5">
           <h2 className="text-base font-semibold uppercase tracking-wide mb-2">Experience</h2>
           <div className="space-y-4">
@@ -167,7 +174,9 @@ export default function ResumeExportPage() {
             ))}
           </div>
         </section>
+        )}
 
+        {sections.skills && (
         <section className="mb-5">
           <h2 className="text-base font-semibold uppercase tracking-wide mb-2">Skills</h2>
           <div className="flex flex-wrap gap-2">
@@ -178,7 +187,9 @@ export default function ResumeExportPage() {
             ))}
           </div>
         </section>
+        )}
 
+        {sections.projects && (
         <section>
           <h2 className="text-base font-semibold uppercase tracking-wide mb-2">Selected Projects</h2>
           <div className="space-y-2">
@@ -190,6 +201,7 @@ export default function ResumeExportPage() {
             ))}
           </div>
         </section>
+        )}
       </article>
     </div>
   );

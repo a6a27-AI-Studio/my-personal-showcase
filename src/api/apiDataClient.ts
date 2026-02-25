@@ -6,6 +6,7 @@ import type {
   Experience,
   PortfolioItem,
   ResumeMeta,
+  ResumeExportSettings,
   Message,
   DeleteMode,
   Me,
@@ -210,6 +211,17 @@ export const ApiDataClient: DataClient = {
 
   async updateResumeMeta(payload: Partial<ResumeMeta>): Promise<ResumeMeta> {
     return fetchApi<ResumeMeta>('/admin/resume', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async getResumeExportSettings(): Promise<ResumeExportSettings> {
+    return fetchApi<ResumeExportSettings>('/resume-export-settings');
+  },
+
+  async updateResumeExportSettings(payload: Partial<ResumeExportSettings>): Promise<ResumeExportSettings> {
+    return fetchApi<ResumeExportSettings>('/admin/resume-export-settings', {
       method: 'PATCH',
       body: JSON.stringify(payload),
     });
