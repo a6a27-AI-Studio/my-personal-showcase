@@ -1,30 +1,58 @@
 import { createRoot } from "react-dom/client";
+import { useEffect, useMemo, useState } from "react";
 import App from "./App.tsx";
 import "./index.css";
 import { getExternalBrowserUrl, isInAppWebView } from "@/lib/webview";
 
-function forceOpenInExternalBrowser(): boolean {
-  if (!isInAppWebView()) return false;
+function WebViewRedirectPage() {
+  const targetUrl = useMemo(() => getExternalBrowserUrl(window.location.href), []);
+  const [status, setStatus] = useState("正在開啟外部瀏覽器...");
 
-  const targetUrl = getExternalBrowserUrl(window.location.href);
+  useEffect(() => {
+    if (targetUrl.startsWith("intent://")) {
+      window.location.href = targetUrl;
+      return;
+    }
 
-  // Android LINE: use intent URL to force Chrome external open.
-  if (targetUrl.startsWith("intent://")) {
-    window.location.href = targetUrl;
-    return true;
-  }
+    const opened = window.open(targetUrl, "_blank");
+    if (!opened) {
+      setStatus("無法自動開啟，請點下方按鈕在外部瀏覽器開啟。");
+    } else {
+      setStatus("已嘗試開啟外部瀏覽器，若未跳轉請點下方按鈕。");
+    }
 
-  // iOS / other in-app browsers: try opening a new external tab first.
-  const opened = window.open(targetUrl, "_blank");
-  if (!opened) {
-    window.location.href = targetUrl;
-  }
+    const timer = window.setTimeout(() => {
+      window.location.href = targetUrl;
+    }, 700);
 
-  return true;
+    return () => window.clearTimeout(timer);
+  }, [targetUrl]);
+
+  return (
+    <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 24, textAlign: "center" }}>
+      <div style={{ maxWidth: 420 }}>
+        <h1 style={{ fontSize: 20, marginBottom: 12 }}>正在切換到外部瀏覽器</h1>
+        <p style={{ color: "#666", marginBottom: 16 }}>{status}</p>
+        <a
+          href={targetUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-block",
+            background: "#111",
+            color: "#fff",
+            padding: "10px 16px",
+            borderRadius: 8,
+            textDecoration: "none",
+            fontSize: 14,
+          }}
+        >
+          立即在瀏覽器開啟
+        </a>
+      </div>
+    </div>
+  );
 }
 
-const redirected = forceOpenInExternalBrowser();
-
-if (!redirected) {
-  createRoot(document.getElementById("root")!).render(<App />);
-}
+const root = createRoot(document.getElementById("root")!);
+root.render(isInAppWebView() ? <WebViewRedirectPage /> : <App />);
