@@ -88,6 +88,14 @@ export function Navbar() {
 
         {/* Right side actions */}
         <div className="flex items-center space-x-4">
+          {/* Resume Export */}
+          <Button variant="outline" size="sm" asChild className="hidden sm:inline-flex">
+            <Link to="/resume/export">
+              <Download className="mr-2 h-4 w-4" />
+              匯出履歷 PDF
+            </Link>
+          </Button>
+
           {/* Resume Download */}
           <Button
             variant="outline"
@@ -99,12 +107,12 @@ export function Navbar() {
             {resume?.pdfUrl ? (
               <a href={resume.pdfUrl} target="_blank" rel="noopener noreferrer">
                 <Download className="mr-2 h-4 w-4" />
-                下載履歷
+                下載原始履歷
               </a>
             ) : (
               <span>
                 <Download className="mr-2 h-4 w-4" />
-                下載履歷
+                下載原始履歷
               </span>
             )}
           </Button>
@@ -199,6 +207,14 @@ export function Navbar() {
                 管理後台
               </Link>
             )}
+            <Link
+              to="/resume/export"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-4 py-2 rounded-md text-sm font-medium text-accent hover:bg-secondary"
+            >
+              <Download className="inline-block mr-2 h-4 w-4" />
+              匯出履歷 PDF
+            </Link>
             {resume?.pdfUrl && (
               <a
                 href={resume.pdfUrl}
@@ -207,7 +223,7 @@ export function Navbar() {
                 className="block px-4 py-2 rounded-md text-sm font-medium text-accent hover:bg-secondary"
               >
                 <Download className="inline-block mr-2 h-4 w-4" />
-                下載履歷
+                下載原始履歷
               </a>
             )}
           </nav>

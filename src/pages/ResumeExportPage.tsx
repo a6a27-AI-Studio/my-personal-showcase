@@ -3,6 +3,8 @@ import { useDataClient } from '@/contexts/DataClientContext';
 import { buildResumeExportData, type ResumeExportData } from '@/lib/resumeExport';
 import { Button } from '@/components/ui/button';
 import { Download, ArrowLeft } from 'lucide-react';
+
+type ResumeTemplate = 'quick' | 'brand';
 import { Link } from 'react-router-dom';
 
 function fmtMonth(value?: string) {
@@ -24,6 +26,8 @@ export default function ResumeExportPage() {
   const [data, setData] = useState<ResumeExportData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [pageError, setPageError] = useState<string | null>(null);
+  const [template, setTemplate] = useState<ResumeTemplate>('quick');
+  const [exportStatus, setExportStatus] = useState<string | null>(null);
 
   useEffect(() => {
     setPageError(null);
@@ -38,15 +42,17 @@ export default function ResumeExportPage() {
 
   const topProjects = useMemo(() => {
     if (!data) return [];
-    return data.core.portfolio.slice(0, 4);
-  }, [data]);
+    return data.core.portfolio.slice(0, template === 'quick' ? 4 : 6);
+  }, [data, template]);
 
   const handlePrint = () => {
+    setExportStatus('正在開啟系統列印視窗...');
     const originalTitle = document.title;
-    document.title = makeFilename();
+    document.title = makeFilename(template === 'quick' ? 'resume-quick-a6a27' : 'resume-brand-a6a27');
     window.print();
     setTimeout(() => {
       document.title = originalTitle;
+      setExportStatus('已觸發匯出，請在列印視窗另存為 PDF。');
     }, 300);
   };
 
@@ -81,26 +87,52 @@ export default function ResumeExportPage() {
         }
       `}</style>
 
-      <div className="container-page no-print mb-6 flex items-center justify-between">
+      <div className="container-page no-print mb-6 flex flex-wrap items-center justify-between gap-3">
         <Button variant="ghost" asChild>
           <Link to="/">
             <ArrowLeft className="mr-2 h-4 w-4" />
             回到首頁
           </Link>
         </Button>
-        <Button onClick={handlePrint}>
-          <Download className="mr-2 h-4 w-4" />
-          匯出 PDF
-        </Button>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant={template === 'quick' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setTemplate('quick')}
+          >
+            Quick Scan
+          </Button>
+          <Button
+            variant={template === 'brand' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setTemplate('brand')}
+          >
+            Brand
+          </Button>
+          <Button onClick={handlePrint}>
+            <Download className="mr-2 h-4 w-4" />
+            匯出 PDF
+          </Button>
+        </div>
       </div>
 
-      <article className="print-wrap mx-auto w-full max-w-[210mm] bg-white border shadow-sm px-8 py-8">
-        <header className="border-b pb-4 mb-4">
+      {exportStatus && (
+        <div className="container-page no-print mb-4 text-sm text-muted-foreground">
+          {exportStatus}
+        </div>
+      )}
+
+      <article className={`print-wrap mx-auto w-full max-w-[210mm] bg-white border shadow-sm px-8 py-8 ${template === 'brand' ? 'border-primary/20' : ''}`}>
+        <header className={`border-b pb-4 mb-4 ${template === 'brand' ? 'bg-primary/5 -mx-8 px-8 pt-6' : ''}`}>
           <h1 className="text-3xl font-bold text-primary">{profile.fullName}</h1>
           <p className="text-lg mt-1">{profile.title}</p>
           <p className="text-sm text-muted-foreground mt-2">
             {profile.location ? `${profile.location} · ` : ''}
             {core.about.links.map((l) => l.url).slice(0, 2).join(' · ')}
+          </p>
+          <p className="text-xs text-muted-foreground mt-2">
+            模板：{template === 'quick' ? 'Quick Scan（快速審閱）' : 'Brand（品牌敘事）'}
           </p>
         </header>
 

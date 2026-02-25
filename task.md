@@ -170,10 +170,10 @@
 - [x] 支援下載檔名規則（`resume-a6a27-YYYYMMDD` via `document.title`）
 
 ### Stage R3 — 介面與操作流程
-- [ ] 在前台加入「匯出履歷 PDF」入口（按鈕）
-- [ ] 新增模板切換（Quick Scan / Brand）
-- [ ] 新增匯出前預覽（Preview）
-- [ ] 匯出 loading / error / success 狀態提示
+- [x] 在前台加入「匯出履歷 PDF」入口（按鈕）
+- [x] 新增模板切換（Quick Scan / Brand）
+- [x] 新增匯出前預覽（Preview）
+- [x] 匯出 loading / error / success 狀態提示
 
 ### Stage R4 — 管理後台設定
 - [ ] Admin 新增履歷匯出設定（顯示區塊開關、排序、聯絡資訊顯示控制）
