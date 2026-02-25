@@ -181,8 +181,8 @@
 - [x] 設定儲存到 DB（新表 `resume_export_settings`）
 
 ### Stage R5 — QA 與交付驗收
-- [ ] 本機測試：`npm run test`
-- [ ] 本機建置：`npm run build`
+- [x] 本機測試：`npm run test`
+- [x] 本機建置：`npm run build`
 - [ ] 版面驗收：Chrome PDF 匯出（桌機/手機 viewport）
 - [ ] 可讀性驗收：5 秒掃描能看懂核心履歷（角色、年資、技能、代表作）
 - [ ] commit + push + GitHub Actions success + live health check
