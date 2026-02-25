@@ -20,7 +20,7 @@ These files still exist but are **legacy** and should not be used for new featur
 - `servicesApi.ts`
 - `portfolioApi.ts`
 - `messagesApi.ts`
-- `resumeApi.ts`
+- ~~`resumeApi.ts`~~（已移除，改用 `resume-export-settings` + `resumeExport` 流程）
 
 Reason:
 

@@ -88,13 +88,7 @@ export interface PortfolioItem {
   updatedAt: string;
 }
 
-// Resume Meta
-export interface ResumeMeta {
-  id: string;
-  version: string;
-  pdfUrl: string | null;
-  updatedAt: string;
-}
+// Legacy resume meta removed (export-only flow)
 
 export interface ResumeExportSettings {
   id: string;

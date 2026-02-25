@@ -1,4 +1,4 @@
-import type { About, Skill, Service, Experience, PortfolioItem, ResumeMeta, ResumeExportSettings, Message } from '@/types';
+import type { About, Skill, Service, Experience, PortfolioItem, ResumeExportSettings, Message } from '@/types';
 
 export const mockAbout: About = {
   id: 'about-1',
@@ -211,12 +211,7 @@ export const mockPortfolio: PortfolioItem[] = [
   },
 ];
 
-export const mockResume: ResumeMeta = {
-  id: 'resume-1',
-  version: '2024.01',
-  pdfUrl: 'https://example.com/resume.pdf',
-  updatedAt: new Date().toISOString(),
-};
+// legacy mockResume removed (export-only flow)
 
 export const mockResumeExportSettings: ResumeExportSettings = {
   id: 'resume-export-settings-1',

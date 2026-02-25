@@ -5,7 +5,6 @@ import type {
   Service,
   Experience,
   PortfolioItem,
-  ResumeMeta,
   ResumeExportSettings,
   Message,
   DeleteMode,
@@ -20,7 +19,6 @@ import {
   mockServices,
   mockExperiences,
   mockPortfolio,
-  mockResume,
   mockResumeExportSettings,
   mockMessages,
 } from './mockData';
@@ -31,7 +29,6 @@ const STORAGE_KEYS = {
   SERVICES: 'portfolio_services',
   EXPERIENCES: 'portfolio_experiences',
   PORTFOLIO: 'portfolio_items',
-  RESUME: 'portfolio_resume',
   RESUME_EXPORT_SETTINGS: 'portfolio_resume_export_settings',
   MESSAGES: 'portfolio_messages',
   CURRENT_ROLE: 'portfolio_current_role',
@@ -80,9 +77,7 @@ function initializeStorage(): void {
   if (!localStorage.getItem(STORAGE_KEYS.PORTFOLIO)) {
     setToStorage(STORAGE_KEYS.PORTFOLIO, mockPortfolio);
   }
-  if (!localStorage.getItem(STORAGE_KEYS.RESUME)) {
-    setToStorage(STORAGE_KEYS.RESUME, mockResume);
-  }
+  // legacy resume storage removed (export-only flow)
   if (!localStorage.getItem(STORAGE_KEYS.RESUME_EXPORT_SETTINGS)) {
     setToStorage(STORAGE_KEYS.RESUME_EXPORT_SETTINGS, mockResumeExportSettings);
   }
@@ -156,9 +151,7 @@ export const MockDataClient: DataClient = {
     return items.find(item => item.slug === slug && item.status === 'published') || null;
   },
 
-  async getResume(): Promise<ResumeMeta> {
-    return getFromStorage(STORAGE_KEYS.RESUME, mockResume);
-  },
+  // legacy getResume removed
 
   // ===== Identity/Auth =====
   async getMe(): Promise<Me> {
@@ -388,12 +381,7 @@ export const MockDataClient: DataClient = {
     setToStorage(STORAGE_KEYS.PORTFOLIO, items.filter(p => p.id !== id));
   },
 
-  async updateResumeMeta(payload: Partial<ResumeMeta>): Promise<ResumeMeta> {
-    const current = await this.getResume();
-    const updated = { ...current, ...payload, updatedAt: new Date().toISOString() };
-    setToStorage(STORAGE_KEYS.RESUME, updated);
-    return updated;
-  },
+  // legacy updateResumeMeta removed
 
   async getResumeExportSettings(): Promise<ResumeExportSettings> {
     return getFromStorage<ResumeExportSettings>(

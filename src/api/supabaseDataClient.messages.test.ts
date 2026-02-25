@@ -17,8 +17,21 @@ vi.mock('@/lib/supabaseClient', () => ({
   },
 }));
 
+type MessageRowTest = {
+  id: string;
+  user_id: string;
+  title: string;
+  content: string;
+  admin_reply: string | null;
+  replied_at: string | null;
+  deleted_at: string | null;
+  deleted_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 const now = '2026-02-24T03:30:00.000Z';
-const baseRow = {
+const baseRow: MessageRowTest = {
   id: 'm1',
   user_id: 'u1',
   title: 't1',

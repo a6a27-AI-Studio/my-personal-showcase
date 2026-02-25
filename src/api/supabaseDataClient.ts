@@ -4,7 +4,6 @@ import type {
     Service,
     Experience,
     PortfolioItem,
-    ResumeMeta,
     ResumeExportSettings,
     Message,
     DeleteMode,
@@ -271,31 +270,6 @@ export const SupabaseDataClient: DataClient = {
             status: data.status as 'draft' | 'published',
             sortOrder: data.sort_order,
             createdAt: data.created_at,
-            updatedAt: data.updated_at,
-        };
-    },
-
-    async getResume(): Promise<ResumeMeta> {
-        const { data, error } = await supabase
-            .from('resume_meta')
-            .select('*')
-            .order('updated_at', { ascending: false })
-            .limit(1)
-            .single();
-
-        if (error || !data) {
-            return {
-                id: '',
-                version: '0.0',
-                pdfUrl: null,
-                updatedAt: new Date().toISOString(),
-            };
-        }
-
-        return {
-            id: data.id,
-            version: data.version,
-            pdfUrl: data.pdf_url,
             updatedAt: data.updated_at,
         };
     },
@@ -742,36 +716,6 @@ export const SupabaseDataClient: DataClient = {
         if (error) {
             throw new Error('Failed to delete portfolio');
         }
-    },
-
-    async updateResumeMeta(payload: Partial<ResumeMeta>): Promise<ResumeMeta> {
-        // Get current resume
-        const current = await this.getResume();
-
-        if (!current.id) {
-            throw new Error('No resume exists yet');
-        }
-
-        const { data, error } = await supabase
-            .from('resume_meta')
-            .update({
-                version: payload.version || current.version,
-                pdf_url: payload.pdfUrl || current.pdfUrl,
-            })
-            .eq('id', current.id)
-            .select()
-            .single();
-
-        if (error || !data) {
-            throw new Error('Failed to update resume');
-        }
-
-        return {
-            id: data.id,
-            version: data.version,
-            pdfUrl: data.pdf_url,
-            updatedAt: data.updated_at,
-        };
     },
 
     async getResumeExportSettings(): Promise<ResumeExportSettings> {

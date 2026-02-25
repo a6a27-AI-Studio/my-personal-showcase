@@ -5,7 +5,6 @@ import type {
   Service,
   Experience,
   PortfolioItem,
-  ResumeMeta,
   ResumeExportSettings,
   Message,
   DeleteMode,
@@ -81,10 +80,6 @@ export const ApiDataClient: DataClient = {
     } catch {
       return null;
     }
-  },
-
-  async getResume(): Promise<ResumeMeta> {
-    return fetchApi<ResumeMeta>('/resume');
   },
 
   // ===== Identity/Auth =====
@@ -207,13 +202,6 @@ export const ApiDataClient: DataClient = {
 
   async deletePortfolio(id: string): Promise<void> {
     await fetchApi(`/admin/portfolio/${id}`, { method: 'DELETE' });
-  },
-
-  async updateResumeMeta(payload: Partial<ResumeMeta>): Promise<ResumeMeta> {
-    return fetchApi<ResumeMeta>('/admin/resume', {
-      method: 'PATCH',
-      body: JSON.stringify(payload),
-    });
   },
 
   async getResumeExportSettings(): Promise<ResumeExportSettings> {

@@ -44,7 +44,7 @@
 - `skills`
 - `portfolio_items`
 - `services` (optional usage)
-- `resume_meta`
+- `resume_export_settings`（設定來源）
 
 ## Aggregation
 

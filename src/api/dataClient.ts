@@ -4,7 +4,6 @@ import type {
   Service,
   Experience,
   PortfolioItem,
-  ResumeMeta,
   ResumeExportSettings,
   Message,
   DeleteMode,
@@ -23,7 +22,6 @@ export interface DataClient {
   listExperiences(): Promise<Experience[]>;
   listPortfolio(params?: PortfolioFilterParams): Promise<PortfolioItem[]>;
   getPortfolioBySlug(slug: string): Promise<PortfolioItem | null>;
-  getResume(): Promise<ResumeMeta>;
 
   // ===== Identity/Auth =====
   getMe(): Promise<Me>;
@@ -60,8 +58,7 @@ export interface DataClient {
   updatePortfolio(id: string, payload: Partial<PortfolioItem>): Promise<PortfolioItem>;
   deletePortfolio(id: string): Promise<void>;
 
-  // Resume
-  updateResumeMeta(payload: Partial<ResumeMeta>): Promise<ResumeMeta>;
+  // Resume Export Settings
   getResumeExportSettings(): Promise<ResumeExportSettings>;
   updateResumeExportSettings(payload: Partial<ResumeExportSettings>): Promise<ResumeExportSettings>;
 }
