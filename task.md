@@ -148,6 +148,53 @@
 
 ---
 
+## 9) 新需求：履歷 PDF 匯出（面試官一目瞭然）
+
+### UX/UI 設計分析與決策
+- [x] 方案 A：純文字 ATS 版（可讀性高、但品牌感較弱）
+- [x] 方案 B：重視視覺設計版（美觀、但可能犧牲掃描效率）
+- [x] 方案 C：**Hybrid 雙模式**（推薦）
+  - Recruiter Quick Scan：單欄、重點數字/技能/時間軸快速掃描
+  - Portfolio Brand：保留視覺風格與作品連結
+- [x] 決策：先做 **Hybrid（同資料來源，兩種模板）**
+
+### Stage R1 — 需求與內容模型
+- [x] 定義 PDF 區塊：Header / Summary / Experience / Skills / Projects / Contact
+- [x] 定義「必顯示」欄位與「可選」欄位（避免資訊過載）
+- [x] 補齊 DataClient 層對匯出資料的整合 DTO（單一資料入口）
+
+### Stage R2 — 匯出引擎選型與實作
+- [ ] 選型：`react-to-print` + print CSS（最快）或 `@react-pdf/renderer`（控制更高）
+- [ ] 建立 `ResumeExportPage` 或隱藏匯出元件
+- [ ] 產出 A4 尺寸排版（中英文、分頁、字級、留白）
+- [ ] 支援下載檔名規則（例如 `resume-a6a27-YYYYMMDD.pdf`）
+
+### Stage R3 — 介面與操作流程
+- [ ] 在前台加入「匯出履歷 PDF」入口（按鈕）
+- [ ] 新增模板切換（Quick Scan / Brand）
+- [ ] 新增匯出前預覽（Preview）
+- [ ] 匯出 loading / error / success 狀態提示
+
+### Stage R4 — 管理後台設定
+- [ ] Admin 新增履歷匯出設定（顯示區塊開關、排序、聯絡資訊顯示控制）
+- [ ] 支援「隱私控制」欄位（電話/Email 可選顯示）
+- [ ] 設定儲存到 DB（新表或現有設定表）
+
+### Stage R5 — QA 與交付驗收
+- [ ] 本機測試：`npm run test`
+- [ ] 本機建置：`npm run build`
+- [ ] 版面驗收：Chrome PDF 匯出（桌機/手機 viewport）
+- [ ] 可讀性驗收：5 秒掃描能看懂核心履歷（角色、年資、技能、代表作）
+- [ ] commit + push + GitHub Actions success + live health check
+
+### 驗收標準（Done Definition）
+- [ ] 面試官在 30 秒內可掌握：你是誰、做過什麼、擅長什麼
+- [ ] PDF 在 A4 列印與螢幕閱讀皆清楚（無版面破碎）
+- [ ] 匯出流程 3 步內完成（進入頁面 → 選模板 → 下載）
+- [ ] Admin 可調整輸出內容，不需改程式碼
+
+---
+
 ## 8) 新需求：經歷頁面（Public + Admin）
 
 ### UX/UI 設計方向分析（先採用）
