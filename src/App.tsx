@@ -22,6 +22,7 @@ const ExperiencesPage = lazy(() => import("./pages/ExperiencesPage"));
 const PortfolioListPage = lazy(() => import("./pages/PortfolioListPage"));
 const PortfolioDetailPage = lazy(() => import("./pages/PortfolioDetailPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
+const ResumeExportPage = lazy(() => import("./pages/ResumeExportPage"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const ForbiddenPage = lazy(() => import("./pages/ForbiddenPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -63,6 +64,7 @@ const App = () => (
                 <Route path="/portfolio" element={<PortfolioListPage />} />
                 <Route path="/portfolio/:slug" element={<PortfolioDetailPage />} />
                 <Route path="/contact" element={<ContactPage />} />
+                <Route path="/resume/export" element={<ResumeExportPage />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/403" element={<ForbiddenPage />} />
 

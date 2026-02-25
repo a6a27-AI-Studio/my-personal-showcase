@@ -164,10 +164,10 @@
 - [x] 補齊 DataClient 層對匯出資料的整合 DTO（單一資料入口）
 
 ### Stage R2 — 匯出引擎選型與實作
-- [ ] 選型：`react-to-print` + print CSS（最快）或 `@react-pdf/renderer`（控制更高）
-- [ ] 建立 `ResumeExportPage` 或隱藏匯出元件
-- [ ] 產出 A4 尺寸排版（中英文、分頁、字級、留白）
-- [ ] 支援下載檔名規則（例如 `resume-a6a27-YYYYMMDD.pdf`）
+- [x] 選型：採 `window.print` + print CSS（最快落地、相容性佳）
+- [x] 建立 `ResumeExportPage`
+- [x] 產出 A4 尺寸排版（字級、留白、列印樣式）
+- [x] 支援下載檔名規則（`resume-a6a27-YYYYMMDD` via `document.title`）
 
 ### Stage R3 — 介面與操作流程
 - [ ] 在前台加入「匯出履歷 PDF」入口（按鈕）
