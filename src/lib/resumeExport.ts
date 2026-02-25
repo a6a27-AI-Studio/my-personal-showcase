@@ -1,5 +1,5 @@
 import type { DataClient } from '@/api/dataClient';
-import type { About, Experience, PortfolioItem, ResumeMeta, ResumeExportSettings, Service, Skill } from '@/types';
+import type { About, Experience, PortfolioItem, ResumeExportSettings, Service, Skill } from '@/types';
 
 export interface ResumeExportCore {
   about: About;
@@ -7,7 +7,6 @@ export interface ResumeExportCore {
   skills: Skill[];
   portfolio: PortfolioItem[];
   services: Service[];
-  resumeMeta: ResumeMeta;
   generatedAt: string;
 }
 
@@ -36,18 +35,15 @@ export interface ResumeExportData {
 }
 
 export async function buildResumeExportData(dataClient: DataClient): Promise<ResumeExportData> {
-  const [about, experiences, skills, portfolio, services, resumeMeta, settings] = await Promise.all([
+  const [about, experiences, skills, portfolio, services, settings] = await Promise.all([
     dataClient.getAbout(),
     dataClient.listExperiences(),
     dataClient.listSkills(),
     dataClient.listPortfolio(),
     dataClient.listServices(),
-    dataClient.getResume(),
     dataClient.getResumeExportSettings(),
   ]);
 
-  // Current source data does not include a dedicated profile table for name/contact.
-  // Use headline/subheadline as fallback identity until admin export settings are introduced.
   const profile: ResumeExportProfile = {
     fullName: about.subheadline?.split('·')[0]?.trim() || about.headline,
     title: about.headline,
@@ -75,7 +71,6 @@ export async function buildResumeExportData(dataClient: DataClient): Promise<Res
       skills,
       portfolio,
       services,
-      resumeMeta,
       generatedAt: new Date().toISOString(),
     },
   };

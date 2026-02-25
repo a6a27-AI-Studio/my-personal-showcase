@@ -64,7 +64,7 @@
   - [x] `SkillsManager`
   - [x] `ServicesManager`
   - [x] `PortfolioManager`
-  - [x] `ResumeManager`
+  - [x] （已棄用）舊版 `ResumeManager`，改由 `ResumeExportSettings` 管理
 - [x] 視情況對大頁（如 Portfolio/Contact）再拆分
 - [x] 重新 build，記錄 chunk 大小前後差異
 
@@ -186,6 +186,7 @@
 - [x] 版面驗收：Chrome PDF 匯出（桌機/手機 viewport）
 - [x] 可讀性驗收：5 秒掃描能看懂核心履歷（角色、年資、技能、代表作）
 - [x] commit + push + GitHub Actions success + live health check
+- [x] 舊版履歷下載/管理流程棄用，統一改為新匯出流程（/resume/export）
 
 ### 驗收標準（Done Definition）
 - [x] 面試官在 30 秒內可掌握：你是誰、做過什麼、擅長什麼

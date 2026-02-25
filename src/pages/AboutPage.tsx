@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDataClient } from '@/contexts/DataClientContext';
 import { Button } from '@/components/ui/button';
 import { Download, ArrowRight, Github, Linkedin, Twitter, Mail } from 'lucide-react';
-import type { About, ResumeMeta } from '@/types';
+import type { About } from '@/types';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   github: Github,
@@ -15,16 +15,15 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 export default function AboutPage() {
   const dataClient = useDataClient();
   const [about, setAbout] = useState<About | null>(null);
-  const [resume, setResume] = useState<ResumeMeta | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [pageError, setPageError] = useState<string | null>(null);
 
   useEffect(() => {
     setPageError(null);
-    Promise.all([dataClient.getAbout(), dataClient.getResume()])
-      .then(([aboutData, resumeData]) => {
+    dataClient
+      .getAbout()
+      .then((aboutData) => {
         setAbout(aboutData);
-        setResume(resumeData);
       })
       .catch((error) => {
         console.error('Failed to load about page data:', error);
@@ -59,19 +58,12 @@ export default function AboutPage() {
 
   return (
     <div className="container-page">
-      {/* Hero Section */}
       <section className="py-12 md:py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6 animate-slide-up">
             <h1 className="text-primary mb-4">關於我 {about.headline}</h1>
-            <p className="text-xl md:text-2xl text-muted-foreground">
-              {about.subheadline}
-            </p>
-            {about.bio && (
-              <p className="text-muted-foreground leading-relaxed">
-                {about.bio}
-              </p>
-            )}
+            <p className="text-xl md:text-2xl text-muted-foreground">{about.subheadline}</p>
+            {about.bio && <p className="text-muted-foreground leading-relaxed">{about.bio}</p>}
             <div className="flex flex-wrap gap-4">
               <Button asChild size="lg" className="btn-gradient">
                 <Link to="/portfolio">
@@ -79,26 +71,13 @@ export default function AboutPage() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                disabled={!resume?.pdfUrl}
-                asChild={!!resume?.pdfUrl}
-              >
-                {resume?.pdfUrl ? (
-                  <a href={resume.pdfUrl} target="_blank" rel="noopener noreferrer">
-                    <Download className="mr-2 h-5 w-5" />
-                    下載履歷 PDF
-                  </a>
-                ) : (
-                  <span>
-                    <Download className="mr-2 h-5 w-5" />
-                    履歷尚未提供
-                  </span>
-                )}
+              <Button variant="outline" size="lg" asChild>
+                <Link to="/resume/export">
+                  <Download className="mr-2 h-5 w-5" />
+                  匯出履歷 PDF
+                </Link>
               </Button>
             </div>
-            {/* Social Links */}
             <div className="flex gap-4 pt-4">
               {about.links.map((link) => {
                 const IconComponent = iconMap[link.icon || ''] || ArrowRight;
@@ -132,7 +111,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Highlights Section */}
       {about.highlights.length > 0 && (
         <section className="py-12 border-t">
           <h2 className="text-2xl font-semibold mb-8">Highlights</h2>

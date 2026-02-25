@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Wrench, Briefcase, FolderKanban, FileText, Clock3, FileOutput } from 'lucide-react';
+import { User, Wrench, Briefcase, FolderKanban, Clock3, FileOutput } from 'lucide-react';
 
 const ADMIN_SECTIONS = [
   {
@@ -34,12 +34,6 @@ const ADMIN_SECTIONS = [
     icon: FolderKanban,
   },
   {
-    title: 'Resume',
-    description: 'Update your resume PDF and version info',
-    href: '/admin/resume',
-    icon: FileText,
-  },
-  {
     title: 'Resume Export',
     description: 'Control PDF export sections and privacy fields',
     href: '/admin/resume-export',
@@ -52,9 +46,7 @@ export default function AdminDashboard() {
     <div className="container-page">
       <div className="section-header">
         <h1 className="text-primary mb-4">Admin Dashboard</h1>
-        <p className="text-xl text-muted-foreground">
-          Manage your portfolio content and settings.
-        </p>
+        <p className="text-xl text-muted-foreground">Manage your portfolio content and settings.</p>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -72,9 +64,7 @@ export default function AdminDashboard() {
                     <section.icon className="h-6 w-6 text-accent" />
                   </div>
                   <div>
-                    <CardTitle className="group-hover:text-accent transition-colors">
-                      {section.title}
-                    </CardTitle>
+                    <CardTitle className="group-hover:text-accent transition-colors">{section.title}</CardTitle>
                   </div>
                 </div>
               </CardHeader>
