@@ -6,10 +6,10 @@ interface AdminGuardProps {
 }
 
 export function AdminGuard({ children }: AdminGuardProps) {
-  const { isAdmin, loading, adminLoading } = useAuth();
+  const { isAdmin, loading, adminLoading, adminChecked } = useAuth();
   const location = useLocation();
 
-  if (loading || adminLoading) {
+  if (loading || adminLoading || !adminChecked) {
     return (
       <div className="container-page flex items-center justify-center min-h-[50vh]">
         <div className="animate-pulse text-muted-foreground">Loading...</div>

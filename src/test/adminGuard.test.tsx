@@ -24,7 +24,7 @@ describe('AdminGuard', () => {
   });
 
   it('shows loading state while auth is loading', () => {
-    mockUseAuth.mockReturnValue({ isAdmin: false, loading: true, adminLoading: false });
+    mockUseAuth.mockReturnValue({ isAdmin: false, loading: true, adminLoading: false, adminChecked: false });
 
     render(
       <MemoryRouter>
@@ -38,7 +38,7 @@ describe('AdminGuard', () => {
   });
 
   it('shows loading while admin status is being checked', () => {
-    mockUseAuth.mockReturnValue({ isAdmin: false, loading: false, adminLoading: true });
+    mockUseAuth.mockReturnValue({ isAdmin: false, loading: false, adminLoading: true, adminChecked: false });
 
     render(
       <MemoryRouter>
@@ -52,7 +52,7 @@ describe('AdminGuard', () => {
   });
 
   it('redirects non-admin users to /403', () => {
-    mockUseAuth.mockReturnValue({ isAdmin: false, loading: false, adminLoading: false });
+    mockUseAuth.mockReturnValue({ isAdmin: false, loading: false, adminLoading: false, adminChecked: true });
 
     render(
       <MemoryRouter>
@@ -66,7 +66,7 @@ describe('AdminGuard', () => {
   });
 
   it('renders protected content for admin users', () => {
-    mockUseAuth.mockReturnValue({ isAdmin: true, loading: false, adminLoading: false });
+    mockUseAuth.mockReturnValue({ isAdmin: true, loading: false, adminLoading: false, adminChecked: true });
 
     render(
       <MemoryRouter>
