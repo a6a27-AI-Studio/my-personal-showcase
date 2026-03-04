@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Wrench, Briefcase, FolderKanban, Clock3, FileOutput, Mail } from 'lucide-react';
+import { User, Wrench, Briefcase, FolderKanban, Clock3, FileOutput, Mail, Home } from 'lucide-react';
 
 const ADMIN_SECTIONS = [
   {
@@ -38,6 +38,12 @@ const ADMIN_SECTIONS = [
     description: 'Control PDF export sections and privacy fields',
     href: '/admin/resume-export',
     icon: FileOutput,
+  },
+  {
+    title: 'Home',
+    description: 'Edit homepage hero + CTA copy (Chinese)',
+    href: '/admin/home',
+    icon: Home,
   },
   {
     title: 'Contact',

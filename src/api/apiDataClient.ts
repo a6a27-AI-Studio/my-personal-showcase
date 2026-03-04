@@ -7,6 +7,7 @@ import type {
   PortfolioItem,
   ResumeExportSettings,
   ContactSettings,
+  HomeSettings,
   Message,
   DeleteMode,
   Me,
@@ -222,6 +223,17 @@ export const ApiDataClient: DataClient = {
 
   async updateContactSettings(payload: Partial<ContactSettings>): Promise<ContactSettings> {
     return fetchApi<ContactSettings>('/admin/contact-settings', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async getHomeSettings(): Promise<HomeSettings> {
+    return fetchApi<HomeSettings>('/home-settings');
+  },
+
+  async updateHomeSettings(payload: Partial<HomeSettings>): Promise<HomeSettings> {
+    return fetchApi<HomeSettings>('/admin/home-settings', {
       method: 'PATCH',
       body: JSON.stringify(payload),
     });

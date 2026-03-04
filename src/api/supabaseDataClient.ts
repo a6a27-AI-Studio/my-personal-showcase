@@ -6,6 +6,7 @@ import type {
     PortfolioItem,
     ResumeExportSettings,
     ContactSettings,
+    HomeSettings,
     Message,
     DeleteMode,
     Me,
@@ -841,6 +842,90 @@ export const SupabaseDataClient: DataClient = {
             phone: data.phone,
             location: data.location,
             socialLinks: data.social_links || [],
+            updatedAt: data.updated_at,
+        };
+    },
+
+    async getHomeSettings(): Promise<HomeSettings> {
+        const { data, error } = await supabase
+            .from('home_settings')
+            .select('*')
+            .limit(1)
+            .maybeSingle();
+
+        if (error || !data) {
+            throw new Error('Failed to fetch home settings');
+        }
+
+        return {
+            id: data.id,
+            heroTitle: data.hero_title,
+            heroSubtitle: data.hero_subtitle,
+            ctaPortfolioText: data.cta_portfolio_text,
+            ctaAboutText: data.cta_about_text,
+            ctaResumeText: data.cta_resume_text,
+            ctaContactText: data.cta_contact_text,
+            skillsTitle: data.skills_title,
+            skillsDescription: data.skills_description,
+            servicesTitle: data.services_title,
+            servicesDescription: data.services_description,
+            portfolioTitle: data.portfolio_title,
+            portfolioDescription: data.portfolio_description,
+            finalCtaTitle: data.final_cta_title,
+            finalCtaDescription: data.final_cta_description,
+            finalCtaButtonText: data.final_cta_button_text,
+            updatedAt: data.updated_at,
+        };
+    },
+
+    async updateHomeSettings(payload: Partial<HomeSettings>): Promise<HomeSettings> {
+        const current = await this.getHomeSettings();
+
+        const updates: Record<string, unknown> = {};
+        if (payload.heroTitle !== undefined) updates.hero_title = payload.heroTitle;
+        if (payload.heroSubtitle !== undefined) updates.hero_subtitle = payload.heroSubtitle;
+        if (payload.ctaPortfolioText !== undefined) updates.cta_portfolio_text = payload.ctaPortfolioText;
+        if (payload.ctaAboutText !== undefined) updates.cta_about_text = payload.ctaAboutText;
+        if (payload.ctaResumeText !== undefined) updates.cta_resume_text = payload.ctaResumeText;
+        if (payload.ctaContactText !== undefined) updates.cta_contact_text = payload.ctaContactText;
+        if (payload.skillsTitle !== undefined) updates.skills_title = payload.skillsTitle;
+        if (payload.skillsDescription !== undefined) updates.skills_description = payload.skillsDescription;
+        if (payload.servicesTitle !== undefined) updates.services_title = payload.servicesTitle;
+        if (payload.servicesDescription !== undefined) updates.services_description = payload.servicesDescription;
+        if (payload.portfolioTitle !== undefined) updates.portfolio_title = payload.portfolioTitle;
+        if (payload.portfolioDescription !== undefined) updates.portfolio_description = payload.portfolioDescription;
+        if (payload.finalCtaTitle !== undefined) updates.final_cta_title = payload.finalCtaTitle;
+        if (payload.finalCtaDescription !== undefined) updates.final_cta_description = payload.finalCtaDescription;
+        if (payload.finalCtaButtonText !== undefined) updates.final_cta_button_text = payload.finalCtaButtonText;
+
+        const { data, error } = await supabase
+            .from('home_settings')
+            .update(updates)
+            .eq('id', current.id)
+            .select('*')
+            .single();
+
+        if (error || !data) {
+            throw new Error('Failed to update home settings');
+        }
+
+        return {
+            id: data.id,
+            heroTitle: data.hero_title,
+            heroSubtitle: data.hero_subtitle,
+            ctaPortfolioText: data.cta_portfolio_text,
+            ctaAboutText: data.cta_about_text,
+            ctaResumeText: data.cta_resume_text,
+            ctaContactText: data.cta_contact_text,
+            skillsTitle: data.skills_title,
+            skillsDescription: data.skills_description,
+            servicesTitle: data.services_title,
+            servicesDescription: data.services_description,
+            portfolioTitle: data.portfolio_title,
+            portfolioDescription: data.portfolio_description,
+            finalCtaTitle: data.final_cta_title,
+            finalCtaDescription: data.final_cta_description,
+            finalCtaButtonText: data.final_cta_button_text,
             updatedAt: data.updated_at,
         };
     },

@@ -6,6 +6,7 @@ import type {
   PortfolioItem,
   ResumeExportSettings,
   ContactSettings,
+  HomeSettings,
   Message,
   DeleteMode,
   Me,
@@ -66,4 +67,8 @@ export interface DataClient {
   // Contact Settings (public read + admin update)
   getContactSettings(): Promise<ContactSettings>;
   updateContactSettings(payload: Partial<ContactSettings>): Promise<ContactSettings>;
+
+  // Home Settings (public read + admin update)
+  getHomeSettings(): Promise<HomeSettings>;
+  updateHomeSettings(payload: Partial<HomeSettings>): Promise<HomeSettings>;
 }

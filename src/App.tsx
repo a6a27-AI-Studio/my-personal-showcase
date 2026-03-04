@@ -30,6 +30,7 @@ const ServicesManager = lazy(() => import("./pages/admin/ServicesManager"));
 const ExperiencesManager = lazy(() => import("./pages/admin/ExperiencesManager"));
 const PortfolioManager = lazy(() => import("./pages/admin/PortfolioManager"));
 const ResumeExportSettingsPage = lazy(() => import("./pages/admin/ResumeExportSettings"));
+const HomeSettingsPage = lazy(() => import("./pages/admin/HomeSettings"));
 const ContactSettingsPage = lazy(() => import("./pages/admin/ContactSettings"));
 
 const queryClient = new QueryClient();
@@ -125,6 +126,15 @@ const App = () => (
                     element={
                       <AdminGuard>
                         <ContactSettingsPage />
+                      </AdminGuard>
+                    }
+                  />
+
+                  <Route
+                    path="/admin/home"
+                    element={
+                      <AdminGuard>
+                        <HomeSettingsPage />
                       </AdminGuard>
                     }
                   />

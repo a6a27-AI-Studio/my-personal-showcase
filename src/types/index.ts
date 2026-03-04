@@ -116,6 +116,32 @@ export interface ContactSettings {
   updatedAt: string;
 }
 
+export interface HomeSettings {
+  id: string;
+  heroTitle: string;
+  heroSubtitle: string;
+
+  ctaPortfolioText: string;
+  ctaAboutText: string;
+  ctaResumeText: string;
+  ctaContactText: string;
+
+  skillsTitle: string;
+  skillsDescription: string;
+
+  servicesTitle: string;
+  servicesDescription: string;
+
+  portfolioTitle: string;
+  portfolioDescription: string;
+
+  finalCtaTitle: string;
+  finalCtaDescription: string;
+  finalCtaButtonText: string;
+
+  updatedAt: string;
+}
+
 export type DeleteMode = 'soft' | 'hard';
 
 // Message (for Contact)
