@@ -6,6 +6,7 @@ import type {
   Experience,
   PortfolioItem,
   ResumeExportSettings,
+  ContactSettings,
   Message,
   DeleteMode,
   Me,
@@ -210,6 +211,17 @@ export const ApiDataClient: DataClient = {
 
   async updateResumeExportSettings(payload: Partial<ResumeExportSettings>): Promise<ResumeExportSettings> {
     return fetchApi<ResumeExportSettings>('/admin/resume-export-settings', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async getContactSettings(): Promise<ContactSettings> {
+    return fetchApi<ContactSettings>('/contact-settings');
+  },
+
+  async updateContactSettings(payload: Partial<ContactSettings>): Promise<ContactSettings> {
+    return fetchApi<ContactSettings>('/admin/contact-settings', {
       method: 'PATCH',
       body: JSON.stringify(payload),
     });

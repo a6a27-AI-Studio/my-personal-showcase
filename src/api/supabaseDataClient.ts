@@ -5,6 +5,7 @@ import type {
     Experience,
     PortfolioItem,
     ResumeExportSettings,
+    ContactSettings,
     Message,
     DeleteMode,
     Me,
@@ -783,6 +784,63 @@ export const SupabaseDataClient: DataClient = {
             showPhone: data.show_phone,
             contactEmail: data.contact_email || undefined,
             contactPhone: data.contact_phone || undefined,
+            updatedAt: data.updated_at,
+        };
+    },
+
+    async getContactSettings(): Promise<ContactSettings> {
+        const { data, error } = await supabase
+            .from('contact_settings')
+            .select('*')
+            .limit(1)
+            .maybeSingle();
+
+        if (error || !data) {
+            throw new Error('Failed to fetch contact settings');
+        }
+
+        return {
+            id: data.id,
+            contactTitle: data.contact_title,
+            contactDescription: data.contact_description,
+            email: data.email,
+            phone: data.phone,
+            location: data.location,
+            socialLinks: data.social_links || [],
+            updatedAt: data.updated_at,
+        };
+    },
+
+    async updateContactSettings(payload: Partial<ContactSettings>): Promise<ContactSettings> {
+        const current = await this.getContactSettings();
+
+        const updates: Record<string, unknown> = {};
+        if (payload.contactTitle !== undefined) updates.contact_title = payload.contactTitle;
+        if (payload.contactDescription !== undefined) updates.contact_description = payload.contactDescription;
+        if (payload.email !== undefined) updates.email = payload.email;
+        if (payload.phone !== undefined) updates.phone = payload.phone;
+        if (payload.location !== undefined) updates.location = payload.location;
+        if (payload.socialLinks !== undefined) updates.social_links = payload.socialLinks;
+
+        const { data, error } = await supabase
+            .from('contact_settings')
+            .update(updates)
+            .eq('id', current.id)
+            .select('*')
+            .single();
+
+        if (error || !data) {
+            throw new Error('Failed to update contact settings');
+        }
+
+        return {
+            id: data.id,
+            contactTitle: data.contact_title,
+            contactDescription: data.contact_description,
+            email: data.email,
+            phone: data.phone,
+            location: data.location,
+            socialLinks: data.social_links || [],
             updatedAt: data.updated_at,
         };
     },

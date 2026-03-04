@@ -105,6 +105,17 @@ export interface ResumeExportSettings {
   updatedAt: string;
 }
 
+export interface ContactSettings {
+  id: string;
+  contactTitle: string;
+  contactDescription: string;
+  email: string;
+  phone: string;
+  location: string;
+  socialLinks: Link[];
+  updatedAt: string;
+}
+
 export type DeleteMode = 'soft' | 'hard';
 
 // Message (for Contact)

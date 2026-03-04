@@ -34,6 +34,15 @@ export default function ContactPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
+  const [contactSettings, setContactSettings] = useState<{
+    contactTitle: string;
+    contactDescription: string;
+    email: string;
+    phone: string;
+    location: string;
+  } | null>(null);
+  const [contactSettingsLoading, setContactSettingsLoading] = useState(true);
+
   const loadMessages = async () => {
     if (authLoading) return;
 
@@ -56,9 +65,39 @@ export default function ContactPage() {
     }
   };
 
+  const loadContactSettings = async () => {
+    setContactSettingsLoading(true);
+    try {
+      const settings = await dataClient.getContactSettings();
+      setContactSettings({
+        contactTitle: settings.contactTitle,
+        contactDescription: settings.contactDescription,
+        email: settings.email,
+        phone: settings.phone,
+        location: settings.location,
+      });
+    } catch (error) {
+      console.error('Failed to load contact settings:', error);
+      // Fall back to hardcoded defaults so the page never goes blank.
+      setContactSettings({
+        contactTitle: '取得聯繫',
+        contactDescription: '我隨時歡迎討論新專案、創意想法或合作機會',
+        email: 'hello@example.com',
+        phone: '+1 (555) 123-4567',
+        location: 'San Francisco, CA',
+      });
+    } finally {
+      setContactSettingsLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadMessages();
   }, [isAuthenticated, authLoading, dataClient]);
+
+  useEffect(() => {
+    loadContactSettings();
+  }, [dataClient]);
 
   const handleCreate = async () => {
     if (!formData.content.trim()) return;
@@ -207,26 +246,41 @@ export default function ContactPage() {
         <div className="space-y-8">
           <Card>
             <CardHeader>
-              <CardTitle>取得聯繫</CardTitle>
+              <CardTitle>{contactSettings?.contactTitle || '取得聯繫'}</CardTitle>
               <CardDescription>
-                我隨時歡迎討論新專案、創意想法或合作機會
+                {contactSettings?.contactDescription || '我隨時歡迎討論新專案、創意想法或合作機會'}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {contactSettingsLoading && (
+                <div className="text-sm text-muted-foreground">載入聯絡資訊中...</div>
+              )}
+
               <div className="flex items-center gap-4">
                 <div className="p-2 rounded-lg bg-accent/10"><Mail className="h-5 w-5 text-accent" /></div>
                 <div>
                   <p className="text-sm text-muted-foreground">電子郵件</p>
-                  <a href="mailto:hello@example.com" className="font-medium hover:text-accent">hello@example.com</a>
+                  <a
+                    href={`mailto:${contactSettings?.email || 'hello@example.com'}`}
+                    className="font-medium hover:text-accent"
+                  >
+                    {contactSettings?.email || 'hello@example.com'}
+                  </a>
                 </div>
               </div>
               <div className="flex items-center gap-4">
                 <div className="p-2 rounded-lg bg-accent/10"><Phone className="h-5 w-5 text-accent" /></div>
-                <div><p className="text-sm text-muted-foreground">電話</p><p className="font-medium">+1 (555) 123-4567</p></div>
+                <div>
+                  <p className="text-sm text-muted-foreground">電話</p>
+                  <p className="font-medium">{contactSettings?.phone || '+1 (555) 123-4567'}</p>
+                </div>
               </div>
               <div className="flex items-center gap-4">
                 <div className="p-2 rounded-lg bg-accent/10"><MapPin className="h-5 w-5 text-accent" /></div>
-                <div><p className="text-sm text-muted-foreground">地點</p><p className="font-medium">San Francisco, CA</p></div>
+                <div>
+                  <p className="text-sm text-muted-foreground">地點</p>
+                  <p className="font-medium">{contactSettings?.location || 'San Francisco, CA'}</p>
+                </div>
               </div>
             </CardContent>
           </Card>
