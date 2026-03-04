@@ -21,21 +21,6 @@
 
   <body>
     <div id="root"></div>
-    <script>
-      // Restore deep-link after GitHub Pages 404 redirect (see public/404.html)
-      (function () {
-        try {
-          var redirect = sessionStorage.getItem('spa:redirect');
-          if (redirect) {
-            sessionStorage.removeItem('spa:redirect');
-            // Only rewrite if it's not already the current path.
-            if (redirect !== window.location.pathname + window.location.search + window.location.hash) {
-              history.replaceState(null, '', redirect);
-            }
-          }
-        } catch (e) {}
-      })();
-    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
