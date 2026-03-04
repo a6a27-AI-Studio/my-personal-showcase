@@ -53,6 +53,19 @@
 **驗證標準**
 - [x] 新增同類檔案不會被追蹤
 
+### P0-3 Admin 後台 F5 重新整理誤判 403（阻斷性）
+- [ ] 重現：登入後進 `/admin` OK，但 F5 會被導到 `/403`
+- [ ] 修正 AuthContext / AdminGuard：在 admin 狀態「尚未確認」前顯示 Loading，而不是直接判定非 admin
+  - [ ] AuthContext 新增 `adminLoading`（或等價機制）
+  - [ ] AdminGuard 依 `loading || adminLoading` 顯示 Loading
+  - [ ] 只在 `loading=false && adminLoading=false && isAdmin=false` 時才導到 `/403`
+- [ ] 新增/更新測試：覆蓋「初始 isAdmin=false → async 確認後變 true」不應被導走
+
+**驗證標準**
+- [ ] 已登入管理員在 `/admin/*` F5 不會跳 `/403`
+- [ ] 未登入或非 admin 才會被導到 `/403`
+- [ ] `npm run build` 成功；CI 綠
+
 ---
 
 ## 3) P1 — 效能與穩定性（建議先做）
