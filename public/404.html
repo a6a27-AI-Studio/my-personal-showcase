@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redirecting…</title>
+  </head>
+  <body>
+    <script>
+      // GitHub Pages doesn't support SPA history routing.
+      // When a deep link is refreshed (e.g. /admin), GH Pages returns 404.
+      // This file captures the intended URL and redirects to the app root.
+      (function () {
+        try {
+          var l = window.location;
+          // Keep pathname + search + hash so the SPA can restore it.
+          sessionStorage.setItem('spa:redirect', l.pathname + l.search + l.hash);
+        } catch (e) {}
+        // Redirect to the repo root (respecting BASE_URL deployment).
+        window.location.replace('./');
+      })();
+    </script>
+  </body>
+</html>
