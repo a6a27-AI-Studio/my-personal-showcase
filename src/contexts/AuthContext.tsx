@@ -8,7 +8,6 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  adminLoading: boolean;
   isAdmin: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -23,7 +22,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [adminLoading, setAdminLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
   // 檢查管理員狀態
@@ -130,33 +128,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // 當 user 變化時檢查 admin 狀態
   useEffect(() => {
-    let cancelled = false;
-
-    if (!user) {
+    if (user) {
+      checkAdminStatus();
+    } else {
       setIsAdmin(false);
-      setAdminLoading(false);
-      return;
     }
-
-    setAdminLoading(true);
-    checkAdminStatus()
-      .catch(() => {
-        // checkAdminStatus already logs + sets isAdmin=false
-      })
-      .finally(() => {
-        if (!cancelled) setAdminLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
   }, [user]);
 
   const value: AuthContextType = {
     user,
     session,
     loading,
-    adminLoading,
     isAdmin,
     signInWithGoogle,
     signOut,
