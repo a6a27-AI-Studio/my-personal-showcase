@@ -96,3 +96,13 @@ npm run build
 - 前台：`/`, `/about`, `/skills`, `/services`, `/portfolio`, `/contact`
 - OAuth callback：`/auth/callback`
 - 後台：`/admin/*`（需登入與權限）
+
+## 首頁文案（Home Settings，可後台編輯）
+
+首頁的 hero/CTA/三卡/底部 CTA 文案已改為由 Supabase 設定表驅動，可在後台直接修改，不需改碼。
+
+- 後台入口：`/admin/home`
+- 資料表：`public.home_settings`
+- 權限：
+  - public read（首頁可在未登入狀態載入）
+  - admin write（RLS 透過 `public.admin_users` 限制）

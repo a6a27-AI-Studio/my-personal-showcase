@@ -247,3 +247,54 @@
 - [ ] GitHub Actions success
 - [ ] live site health check (`200`)
 
+---
+
+## 9) 首頁文案中文化 + 後台可編輯（Home Settings）
+
+### Scope
+- [ ] 首頁 `/` hero + 按鈕 + 三卡區塊 + 底部 CTA 的文案全部改為中文預設
+- [ ] 這些文案改為可由 `/admin/home` 後台直接調整（不需改碼、不需重新部署）
+
+### Stage H1 — Supabase 資料表 + RLS
+- [x] 新增 `home_settings` migration
+- [x] RLS：public read + admin write（沿用 `admin_users`）
+- [x] seed 預設中文文案
+- [x] `supabase db push` 套用到遠端
+
+### Stage H2 — DataClient + 型別
+- [x] `types` 新增 `HomeSettings`
+- [x] `DataClient` 增加 `getHomeSettings` / `updateHomeSettings`
+- [x] `SupabaseDataClient` 實作讀寫 `home_settings`
+
+### Stage H3 — Admin UI
+- [x] 新增 `/admin/home`（Home Settings 編輯器）
+- [x] Admin Dashboard 增加 Home 入口
+
+### Stage H4 — 首頁整合
+- [x] `Index.tsx` 讀取 `home_settings` 並渲染
+- [x] 若讀取失敗，使用 fallback 中文預設（避免空白）
+
+### 預設中文文案（seed/fallback）
+- Hero 主標：歡迎來到我的作品集
+- Hero 副標：用現代技術打造優雅且可靠的解決方案
+- 按鈕：
+  - 查看作品（/portfolio）
+  - 關於我（/about）
+  - 履歷 PDF（/resume/export）
+  - 聯絡我（/contact）
+- 三卡：
+  - 技能與專長：探索我在前端、後端與更多領域的技術能力。
+  - 服務項目：看看我能如何把你的想法落地成產品。
+  - 作品集：查看我近期的專案與案例整理。
+- 底部 CTA：
+  - 標題：準備開始一個專案？
+  - 描述：我隨時歡迎討論新專案與創意想法，我們一起做出很棒的作品。
+  - 按鈕：取得聯繫
+
+### Stage H5 — 驗證與交付
+- [x] `npm test`
+- [x] `npm run build`
+- [x] commit + push
+- [ ] GitHub Actions success
+- [ ] live site health check (`200`)
+
