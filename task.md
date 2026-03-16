@@ -298,3 +298,76 @@
 - [ ] GitHub Actions success
 - [ ] live site health check (`200`)
 
+
+---
+
+## 10) 新需求：`/skills` 黑色銀河地球儀球體（預設華麗模式，可切回傳統樣式）
+
+### 現況判讀
+- [x] 目前 `src/pages/SkillsPage.tsx` 為「上方 tag filter + 下方依 category 分組卡片」的靜態列表頁。
+- [x] 目前 filter 來源為所有技能 `tags` 去重後產生，行為是篩掉不含該 tag 的 skills。
+- [x] 目前 `Skill` 型別僅有 `name/category/level/tags/sortOrder/updatedAt`，沒有 globe 專用欄位（如座標、顏色、摘要、logo、featured）。
+- [x] 目前 `SupabaseDataClient.listSkills()` 僅支援 category 篩選；tag 篩選在前端頁面處理。
+- [x] 目前 `/admin/skills` 僅支援 CRUD 基本欄位與排序，不支援視覺化模式設定。
+- [x] 目前 migration 只看到 `skills.level`、`skills.icon`、`skills.tags` 等基礎欄位調整，尚無 globe / display mode 專用 schema。
+
+### 目標
+- [ ] `/skills` 頁面改為「黑色銀河地球儀球體 + 技能光點 + 持續旋轉」的預設呈現。
+- [ ] 保留上方 filter，不改掉既有篩選入口與使用習慣。
+- [ ] filter 後球體上的光點數量會同步減少，只顯示符合條件的 skills。
+- [ ] 滑鼠 hover 某技能光點時，球體停轉，並顯示該技能細節。
+- [ ] 預設為華麗模式（globe），但使用者可切回傳統列表/卡片模式。
+- [ ] 儘量沿用既有 skills 資料，不為了視覺效果先做過度 schema 膨脹。
+
+### 風險 / 決策點
+- [ ] **互動技術風險**：若採真 3D（three.js / react-three-fiber），效能、包體、SSR/CSR 行為、行動裝置體驗都要驗證。
+- [ ] **可維護性風險**：若直接硬塞大量視覺邏輯進 `SkillsPage.tsx`，後續難維護，需拆成 view mode / globe scene / tooltip overlay。
+- [ ] **資料表風險**：現有 skills 缺少 hover 詳情文案、星點權重、顏色等欄位；若需求要更精準內容控制，才考慮補 schema。
+- [ ] **無障礙風險**：純 hover 對鍵盤/觸控不友善，需設計 focus / tap 替代互動。
+- [ ] **降級風險**：若裝置效能弱或 `prefers-reduced-motion` 啟用，需能退回較輕量的呈現。
+
+### 建議方案（先做、再擴充）
+- [ ] **第一優先採「偽 3D / 數學投影球體」方案**：用 CSS + requestAnimationFrame + 2D/DOM/SVG/canvas 投影做球體旋轉，先避免引入重型 3D 依賴。
+- [ ] 光點資料先由既有 `Skill` 衍生：
+  - `name`：tooltip 標題
+  - `category`：光點色系 / 群組樣式
+  - `level`：光點大小 / 發光強度
+  - `tags`：tooltip 補充資訊與 filter 來源
+  - `sortOrder`：決定球面分布穩定順序（避免每次刷新亂跳）
+- [ ] 「傳統樣式」沿用現有 grouped card UI，避免重做兩套資料流。
+- [ ] 華麗模式切換狀態先放前端 local state / localStorage；若日後要後台可控，再補設定表。
+
+### Stage S1 — 規格收斂與設計決策
+- [ ] 確認華麗模式採「偽 3D」還是「three.js 真 3D」；未明確前預設偽 3D。
+- [ ] 定義 hover/focus/tap 行為：停轉、tooltip 位置、離開後恢復旋轉。
+- [ ] 定義 mode switch UX：`華麗模式 / 傳統模式` 切換位置、文案、預設值。
+- [ ] 定義 reduced-motion / mobile 降級策略。
+
+### Stage S2 — 前端架構調整
+- [ ] 將 `SkillsPage` 拆為：filter 區、mode switch、globe 視圖、traditional 視圖、detail overlay。
+- [ ] 建立 skills -> globe nodes 的衍生 mapper（由既有 `Skill` 生成球面座標與視覺權重）。
+- [ ] 實作 filter 後共用同一份 `filteredSkills`，確保 globe 與 traditional view 同步。
+- [ ] 實作旋轉動畫生命週期（自轉、hover 停轉、離開恢復）。
+
+### Stage S3 — 互動與視覺驗證
+- [ ] 黑色銀河背景、球體光暈、技能光點層次完成。
+- [ ] hover/focus 單一光點時顯示技能名稱、category、level、tags。
+- [ ] filter 切換時，球體光點數量、tooltip、空狀態皆正確。
+- [ ] 傳統模式保留現有分類卡片瀏覽能力。
+
+### Stage S4 — 資料層 / 後台評估（僅在需要時做）
+- [ ] 先以現有 `skills` schema 完成第一版，不急著改 DB。
+- [ ] 若 CEO 確認需要「每個光點自訂描述 / logo / 色彩 / featured 權重 / 固定座標」，再補：
+  - [ ] `types.Skill` 擴充欄位
+  - [ ] `DataClient` / `SupabaseDataClient` / `mockDataClient` / `apiDataClient` 同步
+  - [ ] `/admin/skills` 編輯表單同步新增欄位
+  - [ ] Supabase migration + `supabase db push --linked`
+
+### 驗收方式
+- [ ] `/skills` 預設進入即為華麗球體模式，不是舊卡片模式。
+- [ ] 上方 filter 仍可操作，且切換後球體光點數量明顯隨資料減少。
+- [ ] hover 任一光點時球體停止旋轉，且可見對應技能細節。
+- [ ] 取消 hover / focus 後球體恢復旋轉。
+- [ ] 使用者可手動切回傳統樣式，且傳統樣式仍可正常瀏覽分類技能卡。
+- [ ] 無資料 / filter 無結果 / 載入失敗時，頁面有合理狀態，不出現壞掉的空白球體。
+- [ ] 手機或低動態偏好環境至少可用，不會因動畫導致頁面不可操作。
