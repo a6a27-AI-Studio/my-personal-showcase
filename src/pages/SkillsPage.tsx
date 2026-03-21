@@ -219,7 +219,7 @@ function GalaxySphere({
         <div className="absolute inset-[18%] rounded-full border border-white/10 shadow-[inset_0_0_60px_rgba(255,255,255,0.04)]" />
         <div className="absolute inset-[8%] rounded-full border border-white/5 opacity-50" />
 
-        {renderedNodes.map(({ skill, x, y, opacity, size }) => {
+        {renderedNodes.map(({ skill, x, y, z, opacity, size }) => {
           const isActive = activeSkill?.id === skill.id;
           const trailWidth = 38 + skill.level * 8 + Math.max(0, z) * 18;
           const trailRotate = Math.atan2(y, x) * (180 / Math.PI);
