@@ -1,7 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { type CSSProperties, useEffect, useMemo, useState } from "react";
 import { List, Sparkles, Stars } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Seo } from "@/components/seo/Seo";
 import { useDataClient } from "@/contexts/DataClientContext";
 import type { Skill } from "@/types";
@@ -71,6 +77,7 @@ const PAGE_ANIMATIONS = `
 `;
 
 type DisplayMode = "starfield" | "traditional";
+type LabelPlacement = "left" | "right" | "top" | "bottom";
 
 type CategoryStyle = {
   badge: string;
@@ -147,7 +154,7 @@ type StarPlacement = {
   pulseDuration: number;
   pulseDelay: number;
   orbitIndex: number;
-  labelSide: "left" | "right";
+  labelPlacement: LabelPlacement;
   featured: boolean;
 };
 
@@ -172,6 +179,28 @@ function useReducedMotion() {
   }, []);
 
   return reduced;
+}
+
+function useHoverCapablePointer() {
+  const [hoverCapable, setHoverCapable] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const media = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => setHoverCapable(media.matches);
+    update();
+
+    if (typeof media.addEventListener === "function") {
+      media.addEventListener("change", update);
+      return () => media.removeEventListener("change", update);
+    }
+
+    media.addListener(update);
+    return () => media.removeListener(update);
+  }, []);
+
+  return hoverCapable;
 }
 
 function hashString(input: string) {
@@ -226,10 +255,10 @@ function buildPlacements(skills: Skill[]) {
   const random = seededRandom(hashString(ordered.map((skill) => skill.id).join("|")));
   const ringCapacities = [3, 6, 10, 14];
   const ringRadii = [
-    { x: 18, y: 14 },
-    { x: 29, y: 22 },
-    { x: 39, y: 30 },
-    { x: 46, y: 35 },
+    { x: 16, y: 12 },
+    { x: 26, y: 18 },
+    { x: 35, y: 24 },
+    { x: 42, y: 28 },
   ];
   const placements: StarPlacement[] = [];
 
@@ -249,15 +278,15 @@ function buildPlacements(skills: Skill[]) {
     for (let slot = 0; slot < count; slot += 1) {
       const skill = ordered[skillIndex];
       const angle = angleOffset + (slot / count) * Math.PI * 2;
-      const jitterX = (random() - 0.5) * 4.2;
-      const jitterY = (random() - 0.5) * 3.4;
+      const jitterX = (random() - 0.5) * 3.2;
+      const jitterY = (random() - 0.5) * 2.6;
       const left = Math.min(
-        90,
-        Math.max(10, 50 + Math.cos(angle) * radius.x + jitterX),
+        85,
+        Math.max(15, 50 + Math.cos(angle) * radius.x + jitterX),
       );
       const top = Math.min(
-        88,
-        Math.max(12, 50 + Math.sin(angle) * radius.y + jitterY),
+        71,
+        Math.max(18, 44 + Math.sin(angle) * radius.y + jitterY),
       );
       const featured = FEATURED_SKILLS.includes(skill.name);
 
@@ -269,7 +298,7 @@ function buildPlacements(skills: Skill[]) {
         pulseDuration: featured ? 5 + random() * 2.4 : 6.8 + random() * 3.2,
         pulseDelay: random() * 2.8,
         orbitIndex: ringIndex,
-        labelSide: left < 50 ? "right" : "left",
+        labelPlacement: getLabelPlacement(left, top, ringIndex),
         featured,
       });
 
@@ -316,6 +345,29 @@ function buildConnections(placements: StarPlacement[]) {
 
 function getLevelLabel(level: number) {
   return PROFICIENCY_LABELS[Math.max(0, Math.min(PROFICIENCY_LABELS.length - 1, level - 1))];
+}
+
+function getSignalStateLabel(skill: Skill, selectedSkillId: string | null) {
+  if (selectedSkillId === skill.id) {
+    return "Pinned signal";
+  }
+
+  return FEATURED_SKILLS.includes(skill.name) ? "Featured signal" : "Live signal";
+}
+
+function truncateSkillName(name: string, maxChars = 5) {
+  const characters = Array.from(name);
+  if (characters.length <= maxChars) return name;
+  return `${characters.slice(0, maxChars).join("")}...`;
+}
+
+function getLabelPlacement(left: number, top: number, orbitIndex: number): LabelPlacement {
+  if (top <= 23) return "bottom";
+  if (top >= 67) return "top";
+  if (left <= 20) return "right";
+  if (left >= 80) return "left";
+  if (orbitIndex % 3 === 0) return top < 50 ? "bottom" : "top";
+  return left < 50 ? "right" : "left";
 }
 
 function MetricCard({
@@ -376,6 +428,7 @@ function SkillLevelMeter({
 interface CosmicStarfieldProps {
   skills: Skill[];
   activeSkillId: string | null;
+  previewSkillId: string | null;
   selectedSkillId: string | null;
   reducedMotion: boolean;
   onPreviewSkill: (skillId: string | null) => void;
@@ -385,6 +438,7 @@ interface CosmicStarfieldProps {
 function CosmicStarfield({
   skills,
   activeSkillId,
+  previewSkillId,
   selectedSkillId,
   reducedMotion,
   onPreviewSkill,
@@ -425,66 +479,7 @@ function CosmicStarfield({
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),transparent_24%,transparent_68%,rgba(0,0,0,0.2))]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06),transparent_18%),radial-gradient(circle_at_center,rgba(56,189,248,0.1),transparent_42%)]" />
 
-      <svg
-        className="pointer-events-none absolute inset-0 h-full w-full"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-      >
-        <ellipse
-          cx="50"
-          cy="50"
-          rx="18"
-          ry="14"
-          fill="none"
-          stroke="rgba(255,255,255,0.08)"
-          strokeWidth="0.18"
-        />
-        <ellipse
-          cx="50"
-          cy="50"
-          rx="29"
-          ry="22"
-          fill="none"
-          stroke="rgba(255,255,255,0.06)"
-          strokeWidth="0.16"
-        />
-        <ellipse
-          cx="50"
-          cy="50"
-          rx="39"
-          ry="30"
-          fill="none"
-          stroke="rgba(255,255,255,0.05)"
-          strokeWidth="0.16"
-        />
-        <ellipse
-          cx="50"
-          cy="50"
-          rx="46"
-          ry="35"
-          fill="none"
-          stroke="rgba(255,255,255,0.05)"
-          strokeWidth="0.15"
-        />
-        {connections.map((connection) => {
-          const theme = CATEGORY_STYLES[connection.to.skill.category];
-
-          return (
-            <line
-              key={`${connection.from.skill.id}-${connection.to.skill.id}`}
-              x1={connection.from.left}
-              y1={connection.from.top}
-              x2={connection.to.left}
-              y2={connection.to.top}
-              stroke={theme.line}
-              strokeWidth="0.18"
-              strokeDasharray="1.4 1.8"
-            />
-          );
-        })}
-      </svg>
-
-      <div className="relative min-h-[430px] px-4 py-5 sm:min-h-[520px] sm:px-6 sm:py-6">
+      <div className="relative min-h-[500px] px-5 py-6 lg:min-h-[560px] lg:px-6 lg:py-6">
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="text-[0.68rem] uppercase tracking-[0.34em] text-cyan-200/70">
@@ -501,144 +496,225 @@ function CosmicStarfield({
           </div>
         </div>
 
-        <div
-          className="absolute left-[-18%] top-[8%] h-[1px] w-[38%] bg-gradient-to-r from-transparent via-cyan-300/20 to-transparent blur-[1px]"
-          style={{
-            animation: reducedMotion ? undefined : "scan-sweep 18s linear infinite",
-          }}
-        />
+        <div className="absolute inset-x-0 bottom-28 top-24 sm:bottom-32 sm:top-28">
+          <svg
+            className="pointer-events-none absolute inset-0 h-full w-full"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+          >
+            <ellipse
+              cx="50"
+              cy="50"
+              rx="18"
+              ry="14"
+              fill="none"
+              stroke="rgba(255,255,255,0.08)"
+              strokeWidth="0.18"
+            />
+            <ellipse
+              cx="50"
+              cy="50"
+              rx="29"
+              ry="22"
+              fill="none"
+              stroke="rgba(255,255,255,0.06)"
+              strokeWidth="0.16"
+            />
+            <ellipse
+              cx="50"
+              cy="50"
+              rx="39"
+              ry="30"
+              fill="none"
+              stroke="rgba(255,255,255,0.05)"
+              strokeWidth="0.16"
+            />
+            <ellipse
+              cx="50"
+              cy="50"
+              rx="46"
+              ry="35"
+              fill="none"
+              stroke="rgba(255,255,255,0.05)"
+              strokeWidth="0.15"
+            />
+            {connections.map((connection) => {
+              const theme = CATEGORY_STYLES[connection.to.skill.category];
 
-        <div className="absolute inset-x-0 top-0 h-full">
-          {placements.map((placement) => {
-            const theme = CATEGORY_STYLES[placement.skill.category];
-            const isActive = activeSkillId === placement.skill.id;
-            const isPinned = selectedSkillId === placement.skill.id;
-            const labelClasses =
-              isActive || isPinned
-                ? "inline-flex opacity-100"
-                : placement.featured
-                  ? "hidden lg:inline-flex opacity-80"
-                  : "hidden";
-            const coreSize = (6 + placement.skill.level * 2.4) * placement.scale;
-            const haloSize =
-              (38 + placement.skill.level * 7 + placement.orbitIndex * 4) *
-              placement.scale;
-            const flareSize = (24 + placement.skill.level * 7) * placement.scale;
+              return (
+                <line
+                  key={`${connection.from.skill.id}-${connection.to.skill.id}`}
+                  x1={connection.from.left}
+                  y1={connection.from.top}
+                  x2={connection.to.left}
+                  y2={connection.to.top}
+                  stroke={theme.line}
+                  strokeWidth="0.18"
+                  strokeDasharray="1.4 1.8"
+                />
+              );
+            })}
+          </svg>
 
-            return (
-              <button
-                key={placement.skill.id}
-                type="button"
-                className="group absolute h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full outline-none transition-transform duration-300 hover:scale-[1.03] focus-visible:scale-[1.03]"
-                style={{
-                  left: `${placement.left}%`,
-                  top: `${placement.top}%`,
-                  zIndex: isActive || isPinned ? 30 : 10 + placement.orbitIndex,
-                }}
-                onMouseEnter={() => onPreviewSkill(placement.skill.id)}
-                onMouseLeave={() => onPreviewSkill(null)}
-                onFocus={() => onPreviewSkill(placement.skill.id)}
-                onBlur={() => onPreviewSkill(null)}
-                onClick={() => onSelectSkill(placement.skill.id)}
-                aria-label={`${placement.skill.name}, proficiency ${placement.skill.level} out of 5`}
-              >
-                <span
-                  className="pointer-events-none absolute left-1/2 top-1/2 rounded-full blur-2xl"
-                  style={{
-                    width: `${haloSize}px`,
-                    height: `${haloSize}px`,
-                    transform: "translate(-50%, -50%)",
-                    background: `radial-gradient(circle, ${theme.halo} 0%, transparent 72%)`,
-                  }}
-                />
-                <span
-                  className="pointer-events-none absolute left-1/2 top-1/2 rounded-full border"
-                  style={{
-                    width: `${haloSize}px`,
-                    height: `${haloSize}px`,
-                    transform: "translate(-50%, -50%)",
-                    borderColor:
-                      isActive || isPinned ? theme.line : "rgba(255,255,255,0.1)",
-                    boxShadow:
-                      isActive || isPinned
-                        ? `0 0 28px ${theme.halo}`
-                        : undefined,
-                    animation: reducedMotion
-                      ? undefined
-                      : `halo-wave ${placement.pulseDuration + 2}s ease-in-out ${placement.pulseDelay}s infinite`,
-                  }}
-                />
-                <span
-                  className="pointer-events-none absolute left-1/2 top-1/2 h-px rounded-full bg-white/35 blur-[1px]"
-                  style={{
-                    width: `${flareSize}px`,
-                    transform: "translate(-50%, -50%)",
-                    opacity: placement.featured ? 0.62 : 0.32,
-                  }}
-                />
-                <span
-                  className="pointer-events-none absolute left-1/2 top-1/2 w-px rounded-full bg-white/35 blur-[1px]"
-                  style={{
-                    height: `${flareSize}px`,
-                    transform: "translate(-50%, -50%)",
-                    opacity: placement.featured ? 0.58 : 0.28,
-                  }}
-                />
-                <span
-                  className="pointer-events-none absolute left-1/2 top-1/2 rounded-full"
-                  style={{
-                    width: `${coreSize}px`,
-                    height: `${coreSize}px`,
-                    transform: "translate(-50%, -50%)",
-                    background: "#f8fcff",
-                    boxShadow: `0 0 18px ${theme.glow}, 0 0 46px ${theme.halo}`,
-                    opacity: placement.featured ? 1 : 0.92,
-                    animation: reducedMotion
-                      ? undefined
-                      : `cosmic-breathe ${placement.pulseDuration}s ease-in-out ${placement.pulseDelay}s infinite`,
-                  }}
-                />
-                <span
-                  className="pointer-events-none absolute left-1/2 top-1/2 rounded-full border border-white/20"
-                  style={{
-                    width: `${(14 + placement.skill.level * 3) * placement.scale}px`,
-                    height: `${(14 + placement.skill.level * 3) * placement.scale}px`,
-                    transform: "translate(-50%, -50%)",
-                    opacity: 0.22,
-                  }}
-                />
-                <span
-                  className={`pointer-events-none absolute top-1/2 rounded-full border border-white/10 bg-slate-950/78 px-3 py-1.5 text-[0.65rem] font-medium uppercase tracking-[0.22em] text-slate-100 shadow-[0_18px_40px_rgba(2,6,23,0.45)] backdrop-blur-xl transition-all duration-300 ${labelClasses}`}
-                  style={
-                    placement.labelSide === "right"
-                      ? { left: "calc(100% + 0.8rem)", transform: "translateY(-50%)" }
-                      : { right: "calc(100% + 0.8rem)", transform: "translateY(-50%)" }
-                  }
-                >
-                  {placement.skill.name}
-                </span>
-                {isPinned && (
-                  <span className="pointer-events-none absolute -right-1 top-0 inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/15 px-2 py-0.5 text-[0.55rem] uppercase tracking-[0.2em] text-cyan-100">
-                    pinned
-                  </span>
-                )}
-              </button>
-            );
-          })}
+          <div
+            className="absolute left-[-18%] top-[10%] h-[1px] w-[38%] bg-gradient-to-r from-transparent via-cyan-300/20 to-transparent blur-[1px]"
+            style={{
+              animation: reducedMotion ? undefined : "scan-sweep 18s linear infinite",
+            }}
+          />
+
+          <TooltipProvider delayDuration={90}>
+            <div className="absolute inset-0">
+              {placements.map((placement) => {
+                const theme = CATEGORY_STYLES[placement.skill.category];
+                const isPreviewed = previewSkillId === placement.skill.id;
+                const isPinned = selectedSkillId === placement.skill.id;
+                const isHighlighted = activeSkillId === placement.skill.id || isPinned;
+                const labelText = truncateSkillName(placement.skill.name);
+                const coreSize = (6 + placement.skill.level * 2.4) * placement.scale;
+                const haloSize =
+                  (38 + placement.skill.level * 7 + placement.orbitIndex * 4) *
+                  placement.scale;
+                const flareSize = (24 + placement.skill.level * 7) * placement.scale;
+
+                return (
+                  <Tooltip key={placement.skill.id}>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        className="group absolute h-[5.6rem] w-[5.9rem] -translate-x-1/2 -translate-y-1/2 rounded-[1.65rem] outline-none transition-transform duration-300 hover:scale-[1.04] focus-visible:scale-[1.04]"
+                        style={{
+                          left: `${placement.left}%`,
+                          top: `${placement.top}%`,
+                          zIndex: isPreviewed || isPinned ? 32 : 12 + placement.orbitIndex,
+                        }}
+                        onMouseEnter={() => onPreviewSkill(placement.skill.id)}
+                        onMouseLeave={() => onPreviewSkill(null)}
+                        onFocus={() => onPreviewSkill(placement.skill.id)}
+                        onBlur={() => onPreviewSkill(null)}
+                        onClick={() => onSelectSkill(placement.skill.id)}
+                        aria-label={`${placement.skill.name}, proficiency ${placement.skill.level} out of 5`}
+                        aria-pressed={isPinned}
+                        title={placement.skill.name}
+                      >
+                        <span
+                          className="pointer-events-none absolute left-1/2 top-1/2 rounded-full blur-2xl"
+                          style={{
+                            width: `${haloSize}px`,
+                            height: `${haloSize}px`,
+                            transform: "translate(-50%, -50%)",
+                            background: `radial-gradient(circle, ${theme.halo} 0%, transparent 72%)`,
+                          }}
+                        />
+                        <span
+                          className="pointer-events-none absolute left-1/2 top-1/2 rounded-full border"
+                          style={{
+                            width: `${haloSize}px`,
+                            height: `${haloSize}px`,
+                            transform: "translate(-50%, -50%)",
+                            borderColor:
+                              isHighlighted || isPreviewed
+                                ? theme.line
+                                : "rgba(255,255,255,0.1)",
+                            boxShadow:
+                              isHighlighted || isPreviewed
+                                ? `0 0 28px ${theme.halo}`
+                                : undefined,
+                            animation: reducedMotion
+                              ? undefined
+                              : `halo-wave ${placement.pulseDuration + 2}s ease-in-out ${placement.pulseDelay}s infinite`,
+                          }}
+                        />
+                        <span
+                          className="pointer-events-none absolute left-1/2 top-1/2 h-px rounded-full bg-white/35 blur-[1px]"
+                          style={{
+                            width: `${flareSize}px`,
+                            transform: "translate(-50%, -50%)",
+                            opacity: placement.featured ? 0.62 : 0.32,
+                          }}
+                        />
+                        <span
+                          className="pointer-events-none absolute left-1/2 top-1/2 w-px rounded-full bg-white/35 blur-[1px]"
+                          style={{
+                            height: `${flareSize}px`,
+                            transform: "translate(-50%, -50%)",
+                            opacity: placement.featured ? 0.58 : 0.28,
+                          }}
+                        />
+                        <span
+                          className="pointer-events-none absolute left-1/2 top-1/2 rounded-full"
+                          style={{
+                            width: `${coreSize}px`,
+                            height: `${coreSize}px`,
+                            transform: "translate(-50%, -50%)",
+                            background: "#f8fcff",
+                            boxShadow: `0 0 18px ${theme.glow}, 0 0 46px ${theme.halo}`,
+                            opacity: placement.featured ? 1 : 0.92,
+                            animation: reducedMotion
+                              ? undefined
+                              : `cosmic-breathe ${placement.pulseDuration}s ease-in-out ${placement.pulseDelay}s infinite`,
+                          }}
+                        />
+                        <span
+                          className="pointer-events-none absolute left-1/2 top-1/2 rounded-full border border-white/20"
+                          style={{
+                            width: `${(14 + placement.skill.level * 3) * placement.scale}px`,
+                            height: `${(14 + placement.skill.level * 3) * placement.scale}px`,
+                            transform: "translate(-50%, -50%)",
+                            opacity: 0.22,
+                          }}
+                        />
+                        <span
+                          className={`pointer-events-none absolute bottom-0 left-1/2 inline-flex max-w-[4.8rem] -translate-x-1/2 items-center gap-1.5 overflow-hidden rounded-full border px-2.5 py-1 text-[0.64rem] font-semibold tracking-[0.08em] shadow-[0_18px_40px_rgba(2,6,23,0.45)] backdrop-blur-xl transition-all duration-300 ${
+                            isHighlighted || isPreviewed
+                              ? "border-cyan-300/32 bg-slate-950/95 text-white"
+                              : placement.featured
+                                ? "border-white/18 bg-slate-950/84 text-slate-100"
+                                : "border-white/10 bg-slate-950/78 text-slate-200"
+                          }`}
+                        >
+                          <span className={`h-1.5 w-1.5 rounded-full ${theme.dot}`} />
+                          <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
+                            {labelText}
+                          </span>
+                        </span>
+                        {isPinned && (
+                          <span className="pointer-events-none absolute left-1/2 top-0 inline-flex -translate-x-1/2 -translate-y-[75%] rounded-full border border-cyan-300/30 bg-cyan-300/15 px-2 py-0.5 text-[0.55rem] uppercase tracking-[0.2em] text-cyan-100">
+                            pinned
+                          </span>
+                        )}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side={placement.labelPlacement}
+                      className="border-white/10 bg-slate-950/95 px-3 py-2 text-xs text-slate-100 shadow-[0_18px_40px_rgba(2,6,23,0.45)]"
+                    >
+                      <div className="font-medium text-white">{placement.skill.name}</div>
+                      <div className="mt-1 text-[0.68rem] uppercase tracking-[0.18em] text-slate-400">
+                        {CATEGORY_LABELS[placement.skill.category]} / {getLevelLabel(placement.skill.level)}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
+            </div>
+          </TooltipProvider>
         </div>
 
         <div className="absolute inset-x-4 bottom-4 rounded-[1.5rem] border border-white/10 bg-slate-950/55 px-4 py-4 text-sm text-slate-300 shadow-[0_20px_50px_rgba(2,6,23,0.4)] backdrop-blur-2xl sm:inset-x-6">
           <div className="flex flex-wrap items-center gap-2 text-[0.68rem] uppercase tracking-[0.24em] text-slate-400">
             <span>Signal guidance</span>
             <span className="text-slate-600">/</span>
-            <span>Hover to preview</span>
+            <span>Labels stay visible</span>
+            <span className="text-slate-600">/</span>
+            <span>Hover reveals full name</span>
             <span className="text-slate-600">/</span>
             <span>Click to pin</span>
           </div>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
-            The atlas is intentionally calmer now: fewer always-on labels,
-            softer breathing motion, and clearer orbital structure so the page
-            feels like a real product surface instead of a demo animation.
+            Every signal now carries a compact on-orbit label by default, so an
+            interviewer can scan the constellation immediately instead of
+            hunting for hidden skill names.
           </p>
         </div>
       </div>
@@ -655,58 +731,84 @@ function QuickAccessStrip({
   activeSkillId: string | null;
   onSelectSkill: (skillId: string) => void;
 }) {
+  const activeSkill = skills.find((skill) => skill.id === activeSkillId) || skills[0] || null;
+
   return (
-    <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-4 shadow-[0_18px_50px_rgba(2,6,23,0.22)] backdrop-blur-xl lg:hidden">
-      <div className="mb-3 flex items-center justify-between gap-3">
+    <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.96),rgba(2,6,23,0.9))] p-4 shadow-[0_18px_50px_rgba(2,6,23,0.22)] backdrop-blur-xl md:hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.14),transparent_30%),radial-gradient(circle_at_85%_10%,rgba(129,140,248,0.18),transparent_24%)]" />
+
+      <div className="relative mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="text-[0.68rem] uppercase tracking-[0.3em] text-cyan-200/70">
-            Quick access
+            Mobile constellation
           </div>
           <h3 className="mt-2 text-lg font-semibold text-white">
-            Mobile-friendly signal strip
+            Swipe cards, tap to inspect
           </h3>
+          <p className="mt-2 max-w-[17rem] text-sm leading-6 text-slate-300">
+            Mobile switches to a guided card rail so the layout stays stable and every skill remains readable.
+          </p>
         </div>
-        <span className="rounded-full border border-white/10 bg-slate-950/60 px-3 py-1 text-xs text-slate-300">
-          Tap a card
-        </span>
+        <div className="w-full rounded-[1.15rem] border border-white/10 bg-slate-950/65 px-3 py-2 text-left text-xs text-slate-300 sm:w-auto sm:text-right">
+          <div className="uppercase tracking-[0.18em] text-slate-500">Now inspecting</div>
+          <div className="mt-1 text-sm font-medium text-white">
+            {activeSkill ? activeSkill.name : "Select a skill"}
+          </div>
+        </div>
       </div>
 
-      <div className="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {skills.map((skill) => {
-          const theme = CATEGORY_STYLES[skill.category];
-          const isActive = activeSkillId === skill.id;
+      <div className="relative -mx-1 px-1">
+        <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-6 bg-gradient-to-r from-[#020617] to-transparent" />
+        <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-6 bg-gradient-to-l from-[#020617] to-transparent" />
+        <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {skills.map((skill) => {
+            const theme = CATEGORY_STYLES[skill.category];
+            const isActive = activeSkillId === skill.id;
 
-          return (
-            <button
-              key={skill.id}
-              type="button"
-              onClick={() => onSelectSkill(skill.id)}
-              className={`w-[220px] flex-none rounded-[1.4rem] border px-4 py-4 text-left transition-all duration-300 ${
-                isActive
-                  ? "border-cyan-300/35 bg-cyan-300/10 shadow-[0_20px_50px_rgba(34,211,238,0.16)]"
-                  : "border-white/10 bg-slate-950/55"
-              }`}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="text-sm font-semibold text-white">{skill.name}</div>
-                  <div className="mt-1 text-xs text-slate-400">
-                    {CATEGORY_LABELS[skill.category]}
+            return (
+              <button
+                key={skill.id}
+                type="button"
+                onClick={() => onSelectSkill(skill.id)}
+                aria-pressed={isActive}
+                className={`relative w-[min(88vw,20rem)] snap-start flex-none overflow-hidden rounded-[1.45rem] border px-4 py-4 text-left transition-all duration-300 ${
+                  isActive
+                    ? "border-cyan-300/35 bg-cyan-300/10 shadow-[0_20px_50px_rgba(34,211,238,0.16)]"
+                    : "border-white/10 bg-slate-950/60"
+                }`}
+              >
+                <div
+                  className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${theme.meter}`}
+                />
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-semibold text-white">{skill.name}</div>
+                    <div className="mt-1 text-xs text-slate-400">
+                      {CATEGORY_LABELS[skill.category]}
+                    </div>
                   </div>
+                  <Badge className={theme.badge}>{skill.level}/5</Badge>
                 </div>
-                <Badge className={theme.badge}>{skill.level}/5</Badge>
-              </div>
 
-              <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-300">
-                {skill.description || fallbackSkillDescription(skill)}
-              </p>
+                <p className="mt-3 line-clamp-2 min-h-[3rem] text-sm leading-6 text-slate-300">
+                  {skill.description || fallbackSkillDescription(skill)}
+                </p>
 
-              <div className="mt-4">
-                <SkillLevelMeter skill={skill} compact />
-              </div>
-            </button>
-          );
-        })}
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {skill.tags.slice(0, 3).map((tag) => (
+                    <Badge key={tag} className={theme.chip}>
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+
+                <div className="mt-4">
+                  <SkillLevelMeter skill={skill} compact />
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -1300,28 +1402,31 @@ export default function SkillsPage() {
               <div className="grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_360px] lg:items-start">
                 <div className="space-y-5">
                   {displayMode === "starfield" ? (
-                    <CosmicStarfield
-                      skills={orderedFilteredSkills}
-                      activeSkillId={activeSkill?.id || null}
-                      selectedSkillId={selectedSkillId}
-                      reducedMotion={reducedMotion}
-                      onPreviewSkill={setPreviewSkillId}
-                      onSelectSkill={handleSelectSkill}
-                    />
+                    <>
+                      <div className="hidden md:block">
+                        <CosmicStarfield
+                          skills={orderedFilteredSkills}
+                          activeSkillId={activeSkill?.id || null}
+                          previewSkillId={previewSkillId}
+                          selectedSkillId={selectedSkillId}
+                          reducedMotion={reducedMotion}
+                          onPreviewSkill={setPreviewSkillId}
+                          onSelectSkill={handleSelectSkill}
+                        />
+                      </div>
+
+                      <QuickAccessStrip
+                        skills={orderedFilteredSkills}
+                        activeSkillId={activeSkill?.id || null}
+                        onSelectSkill={handleSelectSkill}
+                      />
+                    </>
                   ) : (
                     <TraditionalSkillsView
                       skills={orderedFilteredSkills}
                       activeSkillId={activeSkill?.id || null}
                       selectedSkillId={selectedSkillId}
                       onPreviewSkill={setPreviewSkillId}
-                      onSelectSkill={handleSelectSkill}
-                    />
-                  )}
-
-                  {displayMode === "starfield" && (
-                    <QuickAccessStrip
-                      skills={orderedFilteredSkills}
-                      activeSkillId={activeSkill?.id || null}
                       onSelectSkill={handleSelectSkill}
                     />
                   )}
