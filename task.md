@@ -196,6 +196,10 @@
 - [x] 在 app 入口恢復被 redirect 的 pathname/search
 - [ ] 驗證 `/skills` 直接開啟可正常進站
 
+### Stage S2.9 — ClawTeam 商用品質 polish
+- [x] 用 ClawTeam 針對商用品質做視覺 / 互動 / UI polish 討論
+- [x] 精修星空構圖、技能分布、detail panel、filter/toggle 質感
+
 ### Stage S3 — 驗證與發布
 - [x] `npm run build`
 - [ ] 視覺驗證與互動驗證

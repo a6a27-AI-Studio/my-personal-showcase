@@ -26,6 +26,15 @@ const CATEGORY_ORDER: Skill["category"][] = [
 
 type DisplayMode = "starfield" | "traditional";
 
+const FEATURED_SKILLS = [
+  "React",
+  "TypeScript",
+  "Node.js",
+  "PostgreSQL",
+  "Docker",
+  "AWS",
+];
+
 type StarPlacement = {
   skill: Skill;
   left: number;
@@ -74,10 +83,21 @@ function seededRandom(seed: number) {
   };
 }
 
+function prioritizeSkills(skills: Skill[]) {
+  return [...skills].sort((a, b) => {
+    const aFeatured = FEATURED_SKILLS.includes(a.name) ? 1 : 0;
+    const bFeatured = FEATURED_SKILLS.includes(b.name) ? 1 : 0;
+    if (aFeatured !== bFeatured) return bFeatured - aFeatured;
+    if (a.level !== b.level) return b.level - a.level;
+    return a.sortOrder - b.sortOrder;
+  });
+}
+
 function chunkSkills(skills: Skill[], size: number) {
+  const ordered = prioritizeSkills(skills);
   const chunks: Skill[][] = [];
-  for (let i = 0; i < skills.length; i += size) {
-    chunks.push(skills.slice(i, i + size));
+  for (let i = 0; i < ordered.length; i += size) {
+    chunks.push(ordered.slice(i, i + size));
   }
   return chunks;
 }
@@ -137,6 +157,7 @@ function StarfieldBatchView({
   const batches = useMemo(() => chunkSkills(skills, 6), [skills]);
   const [batchIndex, setBatchIndex] = useState(0);
   const [phase, setPhase] = useState<"visible" | "transitioning">("visible");
+  const [lockedSkillId, setLockedSkillId] = useState<string | null>(null);
 
   useEffect(() => {
     setBatchIndex(0);
@@ -144,7 +165,8 @@ function StarfieldBatchView({
   }, [skills]);
 
   useEffect(() => {
-    if (batches.length <= 1 || reducedMotion || activeSkill) return;
+    if (batches.length <= 1 || reducedMotion || activeSkill || lockedSkillId)
+      return;
 
     const visibleTimer = window.setTimeout(() => {
       setPhase("transitioning");
@@ -160,7 +182,14 @@ function StarfieldBatchView({
       window.clearTimeout(visibleTimer);
       window.clearTimeout(rotateTimer);
     };
-  }, [activeSkill, batches.length, batchIndex, onActiveSkill, reducedMotion]);
+  }, [
+    activeSkill,
+    batches.length,
+    batchIndex,
+    lockedSkillId,
+    onActiveSkill,
+    reducedMotion,
+  ]);
 
   const currentBatch = batches[batchIndex] || skills;
   const placements = useMemo(
@@ -186,10 +215,10 @@ function StarfieldBatchView({
         }
       `}</style>
 
-      <div className="mb-4 flex items-center justify-between gap-3 text-sm text-slate-300">
+      <div className="mb-5 flex items-center justify-between gap-3 text-sm text-slate-300">
         <div className="flex items-center gap-2">
           <Stars className="h-4 w-4 text-cyan-300" />
-          <span>批次星空技能牆</span>
+          <span>精選技能星空</span>
           <span className="text-slate-500">·</span>
           <span>每批 {currentBatch.length} 個技能</span>
         </div>
@@ -201,8 +230,10 @@ function StarfieldBatchView({
       </div>
 
       <div
-        className="relative mx-auto aspect-[16/10] w-full overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#030712] shadow-[0_0_120px_rgba(76,29,149,0.16),0_0_60px_rgba(56,189,248,0.12)]"
-        onMouseLeave={() => onActiveSkill(null)}
+        className="relative mx-auto aspect-[16/10] w-full overflow-hidden rounded-[2.5rem] border border-white/10 bg-[#030712] shadow-[0_0_120px_rgba(76,29,149,0.16),0_0_60px_rgba(56,189,248,0.12)]"
+        onMouseLeave={() => {
+          if (!lockedSkillId) onActiveSkill(null);
+        }}
       >
         <div className="absolute inset-0 bg-[linear-gradient(180deg,#020617_0%,#030712_40%,#020617_100%)]" />
         <div
@@ -220,8 +251,8 @@ function StarfieldBatchView({
           <div className="absolute left-[35%] top-[16%] h-[26rem] w-[26rem] rounded-full bg-cyan-300/10" />
           <div className="absolute right-[20%] bottom-[8%] h-[24rem] w-[24rem] rounded-full bg-indigo-400/10" />
         </div>
-        <div className="absolute inset-0 opacity-50 [background-image:radial-gradient(circle,rgba(255,255,255,0.9)_0.7px,transparent_0.8px)] [background-size:30px_30px]" />
-        <div className="absolute inset-0 opacity-25 [background-image:radial-gradient(circle,rgba(165,243,252,0.9)_0.8px,transparent_0.9px)] [background-size:72px_72px]" />
+        <div className="absolute inset-0 opacity-40 [background-image:radial-gradient(circle,rgba(255,255,255,0.9)_0.7px,transparent_0.8px)] [background-size:30px_30px]" />
+        <div className="absolute inset-0 opacity-18 [background-image:radial-gradient(circle,rgba(165,243,252,0.9)_0.8px,transparent_0.9px)] [background-size:72px_72px]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.08),transparent_18%),radial-gradient(circle_at_50%_52%,rgba(56,189,248,0.12),transparent_38%),radial-gradient(circle_at_50%_55%,rgba(76,29,149,0.14),transparent_62%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.02),transparent_25%,transparent_70%,rgba(0,0,0,0.12))]" />
 
@@ -236,6 +267,12 @@ function StarfieldBatchView({
                 type="button"
                 onMouseEnter={() => onActiveSkill(star.skill)}
                 onFocus={() => onActiveSkill(star.skill)}
+                onClick={() => {
+                  const next =
+                    lockedSkillId === star.skill.id ? null : star.skill.id;
+                  setLockedSkillId(next);
+                  onActiveSkill(next ? star.skill : null);
+                }}
                 className="group absolute -translate-x-1/2 -translate-y-1/2 text-left outline-none transition-transform duration-500 hover:scale-105 focus:scale-105"
                 style={{
                   left: `${star.left}%`,
@@ -448,18 +485,30 @@ export default function SkillsPage() {
         <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950 px-6 py-8 shadow-[0_30px_80px_rgba(2,6,23,0.65)] md:px-8 md:py-10">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.16),transparent_28%),radial-gradient(circle_at_80%_20%,rgba(168,85,247,0.16),transparent_22%),radial-gradient(circle_at_20%_80%,rgba(251,191,36,0.10),transparent_18%)]" />
           <div className="relative">
-            <div className="section-header mb-8 text-white">
+            <div className="mb-8 text-white">
+              <div className="mb-3 text-xs uppercase tracking-[0.32em] text-cyan-200/80">
+                Capabilities
+              </div>
               <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-400/10 px-4 py-2 text-sm text-cyan-100">
                 <Sparkles className="h-4 w-4" />
                 Starfield Skills Experience
               </div>
               <h1 className="mb-4 text-white">技能星圖</h1>
-              <p className="mx-auto max-w-3xl text-base text-slate-300 md:text-xl">
+              <p className="max-w-3xl text-base text-slate-300 md:text-xl">
                 不再是旋轉球體，而是一片會呼吸的深空技能牆。每一批技能像星星一樣閃爍登場，十秒後再換下一組。
               </p>
+              <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-300">
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                  {filteredSkills.length} skills in view
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                  batch {Math.min(batchIndex + 1, Math.max(batches.length, 1))}{" "}
+                  / {Math.max(batches.length, 1)}
+                </span>
+              </div>
             </div>
 
-            <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
+            <div className="mb-8 flex flex-col gap-4 rounded-[1.75rem] border border-white/10 bg-slate-950/35 p-4 backdrop-blur-xl shadow-[0_12px_30px_rgba(2,6,23,0.25)]">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="text-sm font-medium text-slate-200">
                   顯示模式
@@ -499,6 +548,21 @@ export default function SkillsPage() {
               </div>
 
               <div className="flex flex-col gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedCategory(null);
+                      setSelectedTag(null);
+                      setActiveSkill(null);
+                      setLockedSkillId(null);
+                    }}
+                    className="border-white/10 bg-white/5 text-slate-200 hover:bg-white/10"
+                  >
+                    Reset filters
+                  </Button>
+                </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="min-w-16 text-sm font-medium text-slate-300">
                     分類
@@ -589,7 +653,7 @@ export default function SkillsPage() {
                   )}
                 </div>
 
-                <aside className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 text-slate-100 shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-md xl:sticky xl:top-24">
+                <aside className="rounded-[1.9rem] border border-white/10 bg-slate-950/45 p-6 text-slate-100 shadow-[0_24px_70px_rgba(15,23,42,0.45)] backdrop-blur-xl xl:sticky xl:top-24">
                   <div className="mb-3 text-xs uppercase tracking-[0.24em] text-cyan-300">
                     Skill Insight
                   </div>
@@ -645,6 +709,9 @@ export default function SkillsPage() {
                     </div>
                   ) : (
                     <div className="space-y-4 text-slate-300">
+                      <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.24em] text-slate-400">
+                        Hover a star to preview · click to pin
+                      </div>
                       <p className="leading-7">
                         把滑鼠移到任一技能星點上，右側就會顯示技能細節；在
                         Starfield 模式下，畫面會每約十秒柔和切到下一批技能。
