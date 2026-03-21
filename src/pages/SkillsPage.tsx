@@ -502,8 +502,7 @@ export default function SkillsPage() {
                   {filteredSkills.length} skills in view
                 </span>
                 <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                  batch {Math.min(batchIndex + 1, Math.max(batches.length, 1))}{" "}
-                  / {Math.max(batches.length, 1)}
+                  starfield preview active
                 </span>
               </div>
             </div>
