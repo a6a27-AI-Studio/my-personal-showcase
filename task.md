@@ -64,7 +64,7 @@
 **驗證標準**
 - [ ] 已登入管理員在 `/admin/*` F5 不會跳 `/403`
 - [ ] 未登入或非 admin 才會被導到 `/403`
-- [ ] `npm run build` 成功；CI 綠
+- [x] `npm run build` 成功；CI 綠
 
 ---
 
@@ -146,12 +146,39 @@
    - [ ] `npm run test`
 2. 選一個最小任務（單一 checkbox 群）
 3. 完成後執行：
-   - [ ] `npm run build`
+   - [x] `npm run build`
    - [ ] `npm run test`
 4. 更新本檔進度（把完成項打勾）
 5. 提交 commit（小步提交）
 
 ---
+
+## 10) 新需求：Skills 頁星體 / 地球儀模式
+
+### 需求摘要
+- [ ] 把 `/skills` 預設改成黑色銀河球體 / 地球儀式展示
+- [ ] 每個技能以發光星點 + 技能名稱呈現在旋轉球體上
+- [ ] 球體持續旋轉，滑鼠 hover 任一技能時停止旋轉
+- [ ] hover 時顯示該技能細部說明
+- [ ] 保留上方篩選器，篩選後球體上技能點變少
+- [ ] 提供模式切換：Galaxy（新預設）/ Traditional（舊樣式）
+- [ ] 必要時允許資料庫補欄位（例如 skill description）
+
+### Stage S1 — 設計 / 架構
+- [x] 用 ClawTeam 分析互動視覺、資料結構、實作風險
+- [x] 決定是否引入 3D 套件，或用純 CSS/Canvas/SVG 實作
+- [x] 確定切換模式與 mobile fallback
+
+### Stage S2 — 開發
+- [x] 實作 Galaxy Skills 視覺元件
+- [x] 實作 hover 停止 / 技能詳情面板
+- [x] 實作 category/tag filter 與 mode toggle
+- [x] 接回既有 skills data client
+
+### Stage S3 — 驗證與發布
+- [x] `npm run build`
+- [ ] 視覺驗證與互動驗證
+- [ ] commit + push + GitHub Actions + Pages 驗證
 
 ## 7) 下一步（我建議）
 
@@ -242,7 +269,7 @@
 
 ### Stage E5 — 驗證與交付
 - [ ] `npm run test`
-- [ ] `npm run build`
+- [x] `npm run build`
 - [ ] commit + push
 - [ ] GitHub Actions success
 - [ ] live site health check (`200`)

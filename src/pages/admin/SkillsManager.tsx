@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDataClient } from '@/contexts/DataClientContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -22,6 +23,7 @@ const INITIAL_FORM: Omit<Skill, 'id' | 'updatedAt'> = {
   name: '',
   category: 'frontend',
   level: 3,
+  description: '',
   tags: [],
   sortOrder: 0,
 };
@@ -67,6 +69,7 @@ export default function SkillsManager() {
       name: skill.name,
       category: skill.category,
       level: skill.level,
+      description: skill.description || '',
       tags: skill.tags,
       sortOrder: skill.sortOrder,
     });
@@ -257,6 +260,15 @@ export default function SkillsManager() {
                 max={5}
                 value={formData.level}
                 onChange={(e) => setFormData({ ...formData, level: Number(e.target.value) })}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Description</label>
+              <Textarea
+                value={formData.description || ''}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Short explanation shown in the galaxy detail panel"
+                rows={4}
               />
             </div>
             <div className="space-y-2">

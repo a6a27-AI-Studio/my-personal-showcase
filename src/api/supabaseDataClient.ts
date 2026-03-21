@@ -134,6 +134,7 @@ export const SupabaseDataClient: DataClient = {
             name: s.name,
             category: s.category,
             level: s.level || 3,
+            description: s.description || undefined,
             tags: s.tags || [],
             sortOrder: s.sort_order,
             updatedAt: s.updated_at,
@@ -387,6 +388,7 @@ export const SupabaseDataClient: DataClient = {
                 name: payload.name,
                 category: payload.category,
                 level: payload.level,
+                description: payload.description,
                 tags: payload.tags,
                 sort_order: payload.sortOrder,
             })
@@ -402,6 +404,7 @@ export const SupabaseDataClient: DataClient = {
             name: data.name,
             category: data.category,
             level: data.level,
+            description: data.description || undefined,
             tags: data.tags || [],
             sortOrder: data.sort_order,
             updatedAt: data.updated_at,
@@ -413,6 +416,7 @@ export const SupabaseDataClient: DataClient = {
         if (payload.name !== undefined) updates.name = payload.name;
         if (payload.category !== undefined) updates.category = payload.category;
         if (payload.level !== undefined) updates.level = payload.level;
+        if (payload.description !== undefined) updates.description = payload.description;
         if (payload.tags !== undefined) updates.tags = payload.tags;
         if (payload.sortOrder !== undefined) updates.sort_order = payload.sortOrder;
 
@@ -432,6 +436,7 @@ export const SupabaseDataClient: DataClient = {
             name: data.name,
             category: data.category,
             level: data.level,
+            description: data.description || undefined,
             tags: data.tags || [],
             sortOrder: data.sort_order,
             updatedAt: data.updated_at,

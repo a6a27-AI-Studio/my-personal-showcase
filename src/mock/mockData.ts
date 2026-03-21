@@ -22,18 +22,18 @@ export const mockAbout: About = {
 };
 
 export const mockSkills: Skill[] = [
-  { id: 'skill-1', name: 'React', category: 'frontend', level: 5, tags: ['框架', 'UI'], sortOrder: 1, updatedAt: new Date().toISOString() },
-  { id: 'skill-2', name: 'TypeScript', category: 'frontend', level: 5, tags: ['語言', '型別'], sortOrder: 2, updatedAt: new Date().toISOString() },
-  { id: 'skill-3', name: 'Vue.js', category: 'frontend', level: 4, tags: ['框架', 'UI'], sortOrder: 3, updatedAt: new Date().toISOString() },
-  { id: 'skill-4', name: 'Tailwind CSS', category: 'frontend', level: 5, tags: ['樣式', 'CSS'], sortOrder: 4, updatedAt: new Date().toISOString() },
-  { id: 'skill-5', name: 'Node.js', category: 'backend', level: 4, tags: ['執行環境', 'JavaScript'], sortOrder: 1, updatedAt: new Date().toISOString() },
-  { id: 'skill-6', name: 'Python', category: 'backend', level: 4, tags: ['語言', '腳本'], sortOrder: 2, updatedAt: new Date().toISOString() },
-  { id: 'skill-7', name: 'Express', category: 'backend', level: 4, tags: ['框架', 'API'], sortOrder: 3, updatedAt: new Date().toISOString() },
-  { id: 'skill-8', name: 'PostgreSQL', category: 'database', level: 4, tags: ['SQL', '關聯式'], sortOrder: 1, updatedAt: new Date().toISOString() },
-  { id: 'skill-9', name: 'MongoDB', category: 'database', level: 3, tags: ['NoSQL', '文件型'], sortOrder: 2, updatedAt: new Date().toISOString() },
-  { id: 'skill-10', name: 'Docker', category: 'devops', level: 4, tags: ['容器', '部署'], sortOrder: 1, updatedAt: new Date().toISOString() },
-  { id: 'skill-11', name: 'AWS', category: 'devops', level: 3, tags: ['雲端', '基礎設施'], sortOrder: 2, updatedAt: new Date().toISOString() },
-  { id: 'skill-12', name: 'Git', category: 'tools', level: 5, tags: ['版本控制'], sortOrder: 1, updatedAt: new Date().toISOString() },
+  { id: 'skill-1', name: 'React', category: 'frontend', level: 5, description: '用來打造互動式單頁應用與可重用元件系統。', tags: ['框架', 'UI'], sortOrder: 1, updatedAt: new Date().toISOString() },
+  { id: 'skill-2', name: 'TypeScript', category: 'frontend', level: 5, description: '用靜態型別提升大型前端專案的可維護性與開發信心。', tags: ['語言', '型別'], sortOrder: 2, updatedAt: new Date().toISOString() },
+  { id: 'skill-3', name: 'Vue.js', category: 'frontend', level: 4, description: '擅長快速建立結構清晰、互動流暢的前端介面。', tags: ['框架', 'UI'], sortOrder: 3, updatedAt: new Date().toISOString() },
+  { id: 'skill-4', name: 'Tailwind CSS', category: 'frontend', level: 5, description: '能快速建立具有設計感且一致性的 UI 系統。', tags: ['樣式', 'CSS'], sortOrder: 4, updatedAt: new Date().toISOString() },
+  { id: 'skill-5', name: 'Node.js', category: 'backend', level: 4, description: '建立 API、即時服務與自動化流程的主要執行環境。', tags: ['執行環境', 'JavaScript'], sortOrder: 1, updatedAt: new Date().toISOString() },
+  { id: 'skill-6', name: 'Python', category: 'backend', level: 4, description: '常用於資料處理、CLI 工具、自動化與 AI 整合。', tags: ['語言', '腳本'], sortOrder: 2, updatedAt: new Date().toISOString() },
+  { id: 'skill-7', name: 'Express', category: 'backend', level: 4, description: '快速打造 REST API 與中介層服務。', tags: ['框架', 'API'], sortOrder: 3, updatedAt: new Date().toISOString() },
+  { id: 'skill-8', name: 'PostgreSQL', category: 'database', level: 4, description: '設計結構化資料模型、查詢與效能優化。', tags: ['SQL', '關聯式'], sortOrder: 1, updatedAt: new Date().toISOString() },
+  { id: 'skill-9', name: 'MongoDB', category: 'database', level: 3, description: '適合處理彈性資料結構與快速迭代需求。', tags: ['NoSQL', '文件型'], sortOrder: 2, updatedAt: new Date().toISOString() },
+  { id: 'skill-10', name: 'Docker', category: 'devops', level: 4, description: '用容器封裝環境，讓開發、測試、部署更一致。', tags: ['容器', '部署'], sortOrder: 1, updatedAt: new Date().toISOString() },
+  { id: 'skill-11', name: 'AWS', category: 'devops', level: 3, description: '熟悉常見雲端部署與基礎設施配置。', tags: ['雲端', '基礎設施'], sortOrder: 2, updatedAt: new Date().toISOString() },
+  { id: 'skill-12', name: 'Git', category: 'tools', level: 5, description: '支援多人協作、分支策略與版本追蹤。', tags: ['版本控制'], sortOrder: 1, updatedAt: new Date().toISOString() },
 ];
 
 export const mockServices: Service[] = [

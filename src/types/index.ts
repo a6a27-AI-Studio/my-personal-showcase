@@ -34,6 +34,7 @@ export interface Skill {
   name: string;
   category: 'frontend' | 'backend' | 'devops' | 'database' | 'tools' | 'other';
   level: number; // 1-5
+  description?: string;
   tags: string[];
   sortOrder: number;
   updatedAt: string;
