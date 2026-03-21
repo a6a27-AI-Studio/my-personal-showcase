@@ -182,7 +182,10 @@ function useReducedMotion() {
 }
 
 function useHoverCapablePointer() {
-  const [hoverCapable, setHoverCapable] = useState(false);
+  const [hoverCapable, setHoverCapable] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  });
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
@@ -725,16 +728,24 @@ function CosmicStarfield({
 function QuickAccessStrip({
   skills,
   activeSkillId,
+  selectedSkillId,
   onSelectSkill,
+  className = "",
 }: {
   skills: Skill[];
   activeSkillId: string | null;
+  selectedSkillId: string | null;
   onSelectSkill: (skillId: string) => void;
+  className?: string;
 }) {
   const activeSkill = skills.find((skill) => skill.id === activeSkillId) || skills[0] || null;
+  const activeTheme = activeSkill ? CATEGORY_STYLES[activeSkill.category] : null;
+  const stateLabel = activeSkill ? getSignalStateLabel(activeSkill, selectedSkillId) : null;
 
   return (
-    <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.96),rgba(2,6,23,0.9))] p-4 shadow-[0_18px_50px_rgba(2,6,23,0.22)] backdrop-blur-xl md:hidden">
+    <div
+      className={`relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.96),rgba(2,6,23,0.9))] p-4 shadow-[0_18px_50px_rgba(2,6,23,0.22)] backdrop-blur-xl ${className}`}
+    >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.14),transparent_30%),radial-gradient(circle_at_85%_10%,rgba(129,140,248,0.18),transparent_24%)]" />
 
       <div className="relative mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -743,10 +754,11 @@ function QuickAccessStrip({
             Mobile constellation
           </div>
           <h3 className="mt-2 text-lg font-semibold text-white">
-            Swipe cards, tap to inspect
+            Swipe, tap, inspect
           </h3>
           <p className="mt-2 max-w-[17rem] text-sm leading-6 text-slate-300">
-            Mobile switches to a guided card rail so the layout stays stable and every skill remains readable.
+            Touch devices switch to a guided card rail so the layout stays
+            stable and the detail view updates right below the swipe lane.
           </p>
         </div>
         <div className="w-full rounded-[1.15rem] border border-white/10 bg-slate-950/65 px-3 py-2 text-left text-xs text-slate-300 sm:w-auto sm:text-right">
@@ -757,10 +769,16 @@ function QuickAccessStrip({
         </div>
       </div>
 
+      <div className="relative mb-3 flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.22em] text-slate-400">
+        <span>Swipe for more</span>
+        <span className="text-slate-600">/</span>
+        <span>Tap to update details</span>
+      </div>
+
       <div className="relative -mx-1 px-1">
         <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-6 bg-gradient-to-r from-[#020617] to-transparent" />
-        <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-6 bg-gradient-to-l from-[#020617] to-transparent" />
-        <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-10 bg-gradient-to-l from-[#020617] via-[#020617]/90 to-transparent" />
+        <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 pr-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {skills.map((skill) => {
             const theme = CATEGORY_STYLES[skill.category];
             const isActive = activeSkillId === skill.id;
@@ -771,10 +789,10 @@ function QuickAccessStrip({
                 type="button"
                 onClick={() => onSelectSkill(skill.id)}
                 aria-pressed={isActive}
-                className={`relative w-[min(88vw,20rem)] snap-start flex-none overflow-hidden rounded-[1.45rem] border px-4 py-4 text-left transition-all duration-300 ${
+                className={`relative w-[min(84vw,20rem)] snap-start flex-none overflow-hidden rounded-[1.45rem] border px-4 py-4 text-left transition-all duration-300 ${
                   isActive
                     ? "border-cyan-300/35 bg-cyan-300/10 shadow-[0_20px_50px_rgba(34,211,238,0.16)]"
-                    : "border-white/10 bg-slate-950/60"
+                    : "border-white/10 bg-slate-950/60 active:border-white/20"
                 }`}
               >
                 <div
@@ -810,6 +828,52 @@ function QuickAccessStrip({
           })}
         </div>
       </div>
+
+      {activeSkill && activeTheme && (
+        <div className="relative mt-4 overflow-hidden rounded-[1.5rem] border border-white/10 bg-slate-950/72 p-4 shadow-[0_22px_70px_rgba(2,6,23,0.28)]">
+          <div
+            className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${activeTheme.meter}`}
+          />
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="text-[0.68rem] uppercase tracking-[0.3em] text-cyan-200/70">
+                Selected signal
+              </div>
+              <h4 className="mt-2 text-xl font-semibold text-white">
+                {activeSkill.name}
+              </h4>
+              <p className="mt-2 text-sm leading-7 text-slate-300">
+                {activeSkill.description || fallbackSkillDescription(activeSkill)}
+              </p>
+            </div>
+            <Badge className={activeTheme.badge}>{stateLabel}</Badge>
+          </div>
+
+          <div className="mt-4 rounded-[1.3rem] border border-white/10 bg-white/5 p-4">
+            <SkillLevelMeter skill={activeSkill} compact />
+          </div>
+
+          <div className="mt-4 flex items-center justify-between gap-3 rounded-[1.3rem] border border-white/10 bg-white/5 p-4">
+            <div>
+              <div className="text-[0.65rem] uppercase tracking-[0.24em] text-slate-400">
+                Domain
+              </div>
+              <div className="mt-2 text-sm font-medium text-white">
+                {CATEGORY_LABELS[activeSkill.category]}
+              </div>
+            </div>
+            <Badge className={activeTheme.badge}>{activeSkill.level}/5</Badge>
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {activeSkill.tags.map((tag) => (
+              <Badge key={tag} className={activeTheme.chip}>
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -948,12 +1012,7 @@ function SkillInsightPanel({
   }
 
   const theme = CATEGORY_STYLES[activeSkill.category];
-  const stateLabel =
-    selectedSkillId === activeSkill.id
-      ? "Pinned signal"
-      : FEATURED_SKILLS.includes(activeSkill.name)
-        ? "Featured signal"
-        : "Live signal";
+  const stateLabel = getSignalStateLabel(activeSkill, selectedSkillId);
 
   return (
     <aside className="rounded-[1.9rem] border border-white/10 bg-slate-950/55 p-5 text-slate-100 shadow-[0_28px_80px_rgba(2,6,23,0.45)] backdrop-blur-2xl lg:sticky lg:top-24 sm:p-6">
@@ -1041,6 +1100,7 @@ function SkillInsightPanel({
 export default function SkillsPage() {
   const dataClient = useDataClient();
   const reducedMotion = useReducedMotion();
+  const hoverCapablePointer = useHoverCapablePointer();
   const [skills, setSkills] = useState<Skill[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [pageError, setPageError] = useState<string | null>(null);
@@ -1140,6 +1200,11 @@ export default function SkillsPage() {
 
   const handleSelectSkill = (skillId: string) => {
     setSelectedSkillId((current) => (current === skillId ? null : skillId));
+    setPreviewSkillId(skillId);
+  };
+
+  const handleFocusSkill = (skillId: string) => {
+    setSelectedSkillId(skillId);
     setPreviewSkillId(skillId);
   };
 
@@ -1403,22 +1468,26 @@ export default function SkillsPage() {
                 <div className="space-y-5">
                   {displayMode === "starfield" ? (
                     <>
-                      <div className="hidden md:block">
-                        <CosmicStarfield
-                          skills={orderedFilteredSkills}
-                          activeSkillId={activeSkill?.id || null}
-                          previewSkillId={previewSkillId}
-                          selectedSkillId={selectedSkillId}
-                          reducedMotion={reducedMotion}
-                          onPreviewSkill={setPreviewSkillId}
-                          onSelectSkill={handleSelectSkill}
-                        />
-                      </div>
+                      {hoverCapablePointer && (
+                        <div className="hidden lg:block">
+                          <CosmicStarfield
+                            skills={orderedFilteredSkills}
+                            activeSkillId={activeSkill?.id || null}
+                            previewSkillId={previewSkillId}
+                            selectedSkillId={selectedSkillId}
+                            reducedMotion={reducedMotion}
+                            onPreviewSkill={setPreviewSkillId}
+                            onSelectSkill={handleSelectSkill}
+                          />
+                        </div>
+                      )}
 
                       <QuickAccessStrip
                         skills={orderedFilteredSkills}
                         activeSkillId={activeSkill?.id || null}
-                        onSelectSkill={handleSelectSkill}
+                        selectedSkillId={selectedSkillId}
+                        onSelectSkill={handleFocusSkill}
+                        className={hoverCapablePointer ? "lg:hidden" : ""}
                       />
                     </>
                   ) : (
@@ -1432,12 +1501,14 @@ export default function SkillsPage() {
                   )}
                 </div>
 
-                <SkillInsightPanel
-                  activeSkill={activeSkill}
-                  selectedSkillId={selectedSkillId}
-                  filteredSkills={orderedFilteredSkills}
-                  displayMode={displayMode}
-                />
+                <div className="hidden lg:block">
+                  <SkillInsightPanel
+                    activeSkill={activeSkill}
+                    selectedSkillId={selectedSkillId}
+                    filteredSkills={orderedFilteredSkills}
+                    displayMode={displayMode}
+                  />
+                </div>
               </div>
             )}
           </div>
