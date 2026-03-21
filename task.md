@@ -181,6 +181,11 @@
 - [x] 加入技能光暈拖尾 / comet-style trail
 - [x] hover 時加入環形波紋與聚焦態
 
+### Stage S2.6 — GitHub Pages SPA deep-link 修復
+- [x] 補 GitHub Pages 404 redirect script（保留 BrowserRouter）
+- [x] 在 app 入口恢復被 redirect 的 pathname/search
+- [ ] 驗證 `/skills` 直接開啟可正常進站
+
 ### Stage S3 — 驗證與發布
 - [x] `npm run build`
 - [ ] 視覺驗證與互動驗證

@@ -17,6 +17,19 @@
     <meta name="twitter:title" content="個人作品集｜a6a27" />
     <meta name="twitter:description" content="a6a27 的個人作品集，展示專案、技能與服務。" />
     <meta name="twitter:image" content="/favicon.svg" />
+    <script>
+      (function () {
+        var l = window.location;
+        if (l.search[1] === "p" && l.search.startsWith("?p=/")) {
+          var decoded = l.search
+            .slice(3)
+            .split("&q=");
+          var path = decoded[0].replace(/~and~/g, "&");
+          var query = decoded[1] ? "?" + decoded[1].replace(/~and~/g, "&") : "";
+          window.history.replaceState(null, null, l.pathname.slice(0, -1) + path + query + l.hash);
+        }
+      })();
+    </script>
   </head>
 
   <body>
