@@ -175,6 +175,12 @@
 - [x] 實作 category/tag filter 與 mode toggle
 - [x] 接回既有 skills data client
 
+### Stage S2.5 — 第二輪美術強化（銀河核心）
+- [x] 強化星雲背景層次與核心光暈
+- [x] 加入前後景深與更明顯的星點深度差
+- [x] 加入技能光暈拖尾 / comet-style trail
+- [x] hover 時加入環形波紋與聚焦態
+
 ### Stage S3 — 驗證與發布
 - [x] `npm run build`
 - [ ] 視覺驗證與互動驗證

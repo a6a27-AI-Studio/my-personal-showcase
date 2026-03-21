@@ -150,6 +150,24 @@ function GalaxySphere({
 
   return (
     <div className="relative">
+      <style>{`
+        @keyframes galaxy-pulse {
+          0%, 100% { transform: scale(0.94); opacity: 0.55; }
+          50% { transform: scale(1.08); opacity: 1; }
+        }
+        @keyframes galaxy-ripple {
+          0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.75; }
+          100% { transform: translate(-50%, -50%) scale(1.65); opacity: 0; }
+        }
+        @keyframes nebula-drift-a {
+          0%, 100% { transform: translate3d(-2%, 0%, 0) scale(1); }
+          50% { transform: translate3d(2%, -3%, 0) scale(1.06); }
+        }
+        @keyframes nebula-drift-b {
+          0%, 100% { transform: translate3d(0%, 2%, 0) scale(1); }
+          50% { transform: translate3d(-3%, -2%, 0) scale(1.08); }
+        }
+      `}</style>
       <div className="mb-4 flex items-center justify-between gap-3 text-sm text-slate-300">
         <div className="flex items-center gap-2">
           <Orbit className="h-4 w-4 text-cyan-300" />
@@ -174,16 +192,37 @@ function GalaxySphere({
       </div>
 
       <div
-        className="relative mx-auto aspect-square w-full max-w-[760px] overflow-hidden rounded-[2rem] border border-white/10 bg-[#020617] shadow-[0_0_60px_rgba(56,189,248,0.12)]"
+        className="relative mx-auto aspect-square w-full max-w-[760px] overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#020617] shadow-[0_0_80px_rgba(56,189,248,0.10),0_0_180px_rgba(168,85,247,0.08)]"
         onMouseLeave={() => onActiveSkill(null)}
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(14,165,233,0.15),transparent_30%),radial-gradient(circle_at_20%_20%,rgba(168,85,247,0.18),transparent_25%),radial-gradient(circle_at_80%_30%,rgba(244,114,182,0.16),transparent_20%),linear-gradient(180deg,#020617_0%,#030712_100%)]" />
-        <div className="absolute inset-0 opacity-60 [background-image:radial-gradient(circle,rgba(255,255,255,0.9)_0.7px,transparent_0.8px)] [background-size:28px_28px]" />
-        <div className="absolute inset-[13%] rounded-full border border-cyan-400/20 bg-[radial-gradient(circle_at_50%_45%,rgba(56,189,248,0.18),rgba(14,165,233,0.08)_35%,rgba(15,23,42,0.8)_70%,rgba(2,6,23,0.95)_100%)] shadow-[inset_0_0_80px_rgba(56,189,248,0.18),0_0_80px_rgba(56,189,248,0.06)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,#020617_0%,#030712_35%,#020617_100%)]" />
+        <div
+          className="absolute inset-[-12%] opacity-80 blur-3xl"
+          style={{ animation: "nebula-drift-a 18s ease-in-out infinite" }}
+        >
+          <div className="absolute left-[8%] top-[12%] h-52 w-52 rounded-full bg-fuchsia-500/18" />
+          <div className="absolute right-[10%] top-[18%] h-64 w-64 rounded-full bg-cyan-400/16" />
+          <div className="absolute bottom-[12%] left-[18%] h-72 w-72 rounded-full bg-violet-500/16" />
+        </div>
+        <div
+          className="absolute inset-[-10%] opacity-70 blur-[90px]"
+          style={{ animation: "nebula-drift-b 24s ease-in-out infinite" }}
+        >
+          <div className="absolute left-[34%] top-[28%] h-80 w-80 rounded-full bg-sky-400/12" />
+          <div className="absolute right-[22%] bottom-[16%] h-72 w-72 rounded-full bg-amber-300/8" />
+        </div>
+        <div className="absolute inset-0 opacity-60 [background-image:radial-gradient(circle,rgba(255,255,255,0.95)_0.7px,transparent_0.8px)] [background-size:28px_28px]" />
+        <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(circle,rgba(125,211,252,0.9)_0.7px,transparent_0.8px)] [background-size:56px_56px]" />
+        <div className="absolute inset-[11%] rounded-full border border-cyan-300/20 bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.10),rgba(56,189,248,0.14)_18%,rgba(37,99,235,0.12)_38%,rgba(15,23,42,0.72)_64%,rgba(2,6,23,0.96)_100%)] shadow-[inset_0_0_140px_rgba(56,189,248,0.20),0_0_90px_rgba(56,189,248,0.10)]" />
+        <div className="absolute left-1/2 top-1/2 h-[22%] w-[22%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-300/18 blur-3xl" />
+        <div className="absolute left-1/2 top-1/2 h-[12%] w-[12%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20 blur-2xl" />
         <div className="absolute inset-[18%] rounded-full border border-white/10 shadow-[inset_0_0_60px_rgba(255,255,255,0.04)]" />
+        <div className="absolute inset-[8%] rounded-full border border-white/5 opacity-50" />
 
         {renderedNodes.map(({ skill, x, y, opacity, size }) => {
           const isActive = activeSkill?.id === skill.id;
+          const trailWidth = 38 + skill.level * 8 + Math.max(0, z) * 18;
+          const trailRotate = Math.atan2(y, x) * (180 / Math.PI);
           return (
             <button
               key={skill.id}
@@ -198,9 +237,31 @@ function GalaxySphere({
               }}
               aria-label={`${skill.name}，熟練度 ${skill.level} / 5`}
             >
+              <span
+                className="pointer-events-none absolute left-1/2 top-1/2 rounded-full bg-gradient-to-r from-cyan-300/0 via-cyan-200/30 to-white/0 blur-md"
+                style={{
+                  width: `${trailWidth}px`,
+                  height: "16px",
+                  transform: `translate(-50%, -50%) rotate(${trailRotate}deg)`,
+                  opacity: Math.max(0.22, opacity * 0.55),
+                }}
+              />
+              <span
+                className="pointer-events-none absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-200/25"
+                style={
+                  isActive
+                    ? { animation: "galaxy-ripple 1.2s ease-out infinite" }
+                    : undefined
+                }
+              />
               <span className="flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/55 px-3 py-1.5 shadow-[0_0_24px_rgba(255,255,255,0.08)] backdrop-blur-sm transition-colors group-hover:border-cyan-300/50 group-hover:bg-slate-950/80">
                 <span
                   className={`h-2.5 w-2.5 rounded-full ${isActive ? "bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.95)]" : "bg-white shadow-[0_0_14px_rgba(255,255,255,0.8)]"}`}
+                  style={
+                    isActive
+                      ? { animation: "galaxy-pulse 1.4s ease-in-out infinite" }
+                      : undefined
+                  }
                 />
                 <span className="whitespace-nowrap text-xs font-medium tracking-[0.18em] text-slate-100/95 uppercase">
                   {skill.name}
@@ -210,7 +271,7 @@ function GalaxySphere({
           );
         })}
 
-        <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center gap-2 rounded-2xl border border-white/10 bg-slate-950/55 px-4 py-3 text-xs text-slate-300 backdrop-blur-md">
+        <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center gap-2 rounded-2xl border border-white/10 bg-slate-950/45 px-4 py-3 text-xs text-slate-300 backdrop-blur-xl shadow-[0_12px_30px_rgba(2,6,23,0.45)]">
           <Sparkles className="h-4 w-4 text-cyan-300" />
           <span>預設為華麗星體模式，滑鼠停在技能上會停止旋轉並顯示細節。</span>
         </div>
