@@ -1,4 +1,4 @@
-import { type CSSProperties, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { List, Sparkles, Stars } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,12 +13,12 @@ import { useDataClient } from "@/contexts/DataClientContext";
 import type { Skill } from "@/types";
 
 const CATEGORY_LABELS: Record<Skill["category"], string> = {
-  frontend: "Frontend Systems",
-  backend: "Backend Systems",
-  database: "Data Layer",
-  devops: "Platform Ops",
-  tools: "Delivery Tools",
-  other: "Other Signals",
+  frontend: "前端系統",
+  backend: "後端系統",
+  database: "資料庫",
+  devops: "平台維運",
+  tools: "工具與流程",
+  other: "其他能力",
 };
 
 const CATEGORY_ORDER: Skill["category"][] = [
@@ -40,11 +40,11 @@ const FEATURED_SKILLS = [
 ];
 
 const PROFICIENCY_LABELS = [
-  "Emerging",
-  "Working",
-  "Strong",
-  "Advanced",
-  "Expert",
+  "入門",
+  "實務中",
+  "熟練",
+  "進階",
+  "專家",
 ];
 
 const PAGE_ANIMATIONS = `
@@ -161,7 +161,7 @@ type StarPlacement = {
 function fallbackSkillDescription(skill: Skill) {
   const tags = skill.tags.slice(0, 3).join(", ");
   const category = CATEGORY_LABELS[skill.category];
-  return `${category} capability with a ${skill.level}/5 proficiency rating${tags ? ` across ${tags}` : ""}.`;
+  return `${category}相關能力，熟練度 ${skill.level}/5${tags ? `，涵蓋 ${tags}` : ""}。`;
 }
 
 function useReducedMotion() {
@@ -352,10 +352,10 @@ function getLevelLabel(level: number) {
 
 function getSignalStateLabel(skill: Skill, selectedSkillId: string | null) {
   if (selectedSkillId === skill.id) {
-    return "Pinned signal";
+    return "已固定";
   }
 
-  return FEATURED_SKILLS.includes(skill.name) ? "Featured signal" : "Live signal";
+  return FEATURED_SKILLS.includes(skill.name) ? "重點技能" : "目前焦點";
 }
 
 function truncateSkillName(name: string, maxChars = 5) {
@@ -405,7 +405,7 @@ function SkillLevelMeter({
   return (
     <div className={compact ? "space-y-2" : "space-y-3"}>
       <div className="flex items-center justify-between text-[0.68rem] uppercase tracking-[0.24em] text-slate-400">
-        <span>Proficiency</span>
+        <span>熟練度</span>
         <span className="text-slate-200">{getLevelLabel(skill.level)}</span>
       </div>
       <div className="h-2 rounded-full bg-white/10">
@@ -486,16 +486,16 @@ function CosmicStarfield({
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="text-[0.68rem] uppercase tracking-[0.34em] text-cyan-200/70">
-              Constellation viewport
+              技能星圖
             </div>
             <h2 className="mt-2 text-xl font-semibold text-white sm:text-2xl">
-              Product-grade skill atlas
+              商用級技能星圖
             </h2>
           </div>
           <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/55 px-3 py-2 text-xs uppercase tracking-[0.2em] text-slate-300 backdrop-blur-xl">
-            <span>{skills.length} mapped</span>
+            <span>{skills.length} 項技能</span>
             <span className="text-slate-600">/</span>
-            <span>{featuredCount} anchor stars</span>
+            <span>{featuredCount} 項重點技能</span>
           </div>
         </div>
 
@@ -683,7 +683,7 @@ function CosmicStarfield({
                         </span>
                         {isPinned && (
                           <span className="pointer-events-none absolute left-1/2 top-0 inline-flex -translate-x-1/2 -translate-y-[75%] rounded-full border border-cyan-300/30 bg-cyan-300/15 px-2 py-0.5 text-[0.55rem] uppercase tracking-[0.2em] text-cyan-100">
-                            pinned
+                            已固定
                           </span>
                         )}
                       </button>
@@ -706,18 +706,17 @@ function CosmicStarfield({
 
         <div className="absolute inset-x-4 bottom-4 rounded-[1.5rem] border border-white/10 bg-slate-950/55 px-4 py-4 text-sm text-slate-300 shadow-[0_20px_50px_rgba(2,6,23,0.4)] backdrop-blur-2xl sm:inset-x-6">
           <div className="flex flex-wrap items-center gap-2 text-[0.68rem] uppercase tracking-[0.24em] text-slate-400">
-            <span>Signal guidance</span>
+            <span>操作提示</span>
             <span className="text-slate-600">/</span>
-            <span>Labels stay visible</span>
+            <span>名稱常駐顯示</span>
             <span className="text-slate-600">/</span>
-            <span>Hover reveals full name</span>
+            <span>滑入顯示全名</span>
             <span className="text-slate-600">/</span>
-            <span>Click to pin</span>
+            <span>點擊固定</span>
           </div>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
-            Every signal now carries a compact on-orbit label by default, so an
-            interviewer can scan the constellation immediately instead of
-            hunting for hidden skill names.
+            每個技能現在都會預設顯示縮短名稱，面試官可以直接掃描整張星圖，
+            不需要把滑鼠一個一個移上去找技能名稱。
           </p>
         </div>
       </div>
@@ -751,28 +750,27 @@ function QuickAccessStrip({
       <div className="relative mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="text-[0.68rem] uppercase tracking-[0.3em] text-cyan-200/70">
-            Mobile constellation
+            行動版瀏覽
           </div>
           <h3 className="mt-2 text-lg font-semibold text-white">
-            Swipe, tap, inspect
+            滑動、點擊、查看
           </h3>
           <p className="mt-2 max-w-[17rem] text-sm leading-6 text-slate-300">
-            Touch devices switch to a guided card rail so the layout stays
-            stable and the detail view updates right below the swipe lane.
+            在觸控裝置上會切換成卡片滑動模式，版面更穩定，點擊後詳情也會直接出現在下方。
           </p>
         </div>
         <div className="w-full rounded-[1.15rem] border border-white/10 bg-slate-950/65 px-3 py-2 text-left text-xs text-slate-300 sm:w-auto sm:text-right">
-          <div className="uppercase tracking-[0.18em] text-slate-500">Now inspecting</div>
+          <div className="uppercase tracking-[0.18em] text-slate-500">目前查看</div>
           <div className="mt-1 text-sm font-medium text-white">
-            {activeSkill ? activeSkill.name : "Select a skill"}
+            {activeSkill ? activeSkill.name : "請先選擇技能"}
           </div>
         </div>
       </div>
 
       <div className="relative mb-3 flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.22em] text-slate-400">
-        <span>Swipe for more</span>
+        <span>左右滑動查看更多</span>
         <span className="text-slate-600">/</span>
-        <span>Tap to update details</span>
+        <span>點擊更新詳情</span>
       </div>
 
       <div className="relative -mx-1 px-1">
@@ -837,7 +835,7 @@ function QuickAccessStrip({
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="text-[0.68rem] uppercase tracking-[0.3em] text-cyan-200/70">
-                Selected signal
+                目前選取
               </div>
               <h4 className="mt-2 text-xl font-semibold text-white">
                 {activeSkill.name}
@@ -856,7 +854,7 @@ function QuickAccessStrip({
           <div className="mt-4 flex items-center justify-between gap-3 rounded-[1.3rem] border border-white/10 bg-white/5 p-4">
             <div>
               <div className="text-[0.65rem] uppercase tracking-[0.24em] text-slate-400">
-                Domain
+                分類
               </div>
               <div className="mt-2 text-sm font-medium text-white">
                 {CATEGORY_LABELS[activeSkill.category]}
@@ -918,7 +916,7 @@ function TraditionalSkillsView({
             <div className="mb-5 flex items-end justify-between gap-4">
               <div>
                 <div className="text-[0.68rem] uppercase tracking-[0.3em] text-cyan-200/70">
-                  Structured matrix
+                  結構化清單
                 </div>
                 <h2 className="mt-2 text-2xl font-semibold text-white">
                   {CATEGORY_LABELS[typedCategory]}
@@ -964,7 +962,7 @@ function TraditionalSkillsView({
                         <Badge className={skillTheme.badge}>{skill.level}/5</Badge>
                         {isPinned && (
                           <span className="rounded-full border border-cyan-300/20 bg-cyan-300/12 px-2 py-1 text-[0.6rem] uppercase tracking-[0.2em] text-cyan-100">
-                            pinned
+                            已固定
                           </span>
                         )}
                       </div>
@@ -1019,7 +1017,7 @@ function SkillInsightPanel({
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="text-[0.68rem] uppercase tracking-[0.3em] text-cyan-200/70">
-            Mission control
+            技能面板
           </div>
           <h2 className="mt-3 text-2xl font-semibold text-white">
             {activeSkill.name}
@@ -1038,7 +1036,7 @@ function SkillInsightPanel({
       <div className="mt-5 grid grid-cols-2 gap-3">
         <div className="rounded-[1.35rem] border border-white/10 bg-white/5 p-4">
           <div className="text-[0.68rem] uppercase tracking-[0.24em] text-slate-400">
-            Domain
+            分類
           </div>
           <div className="mt-3 text-sm font-medium text-white">
             {CATEGORY_LABELS[activeSkill.category]}
@@ -1046,10 +1044,10 @@ function SkillInsightPanel({
         </div>
         <div className="rounded-[1.35rem] border border-white/10 bg-white/5 p-4">
           <div className="text-[0.68rem] uppercase tracking-[0.24em] text-slate-400">
-            View mode
+            檢視模式
           </div>
           <div className="mt-3 text-sm font-medium text-white">
-            {displayMode === "starfield" ? "Constellation" : "Matrix"}
+            {displayMode === "starfield" ? "星圖" : "矩陣"}
           </div>
         </div>
       </div>
@@ -1057,9 +1055,9 @@ function SkillInsightPanel({
       <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
         <div className="flex items-center justify-between gap-3">
           <div className="text-[0.68rem] uppercase tracking-[0.24em] text-slate-400">
-            Stack markers
+            技能標記
           </div>
-          <span className="text-xs text-slate-400">{activeSkill.tags.length} tags</span>
+          <span className="text-xs text-slate-400">{activeSkill.tags.length} 個標籤</span>
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {activeSkill.tags.map((tag) => (
@@ -1072,7 +1070,7 @@ function SkillInsightPanel({
 
       <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-gradient-to-br from-white/8 to-white/[0.03] p-4">
         <div className="text-[0.68rem] uppercase tracking-[0.24em] text-slate-400">
-          Atlas summary
+          總覽
         </div>
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div>
@@ -1080,7 +1078,7 @@ function SkillInsightPanel({
               {filteredSkills.length}
             </div>
             <div className="text-xs uppercase tracking-[0.18em] text-slate-400">
-              Signals in view
+              目前顯示
             </div>
           </div>
           <div>
@@ -1088,7 +1086,7 @@ function SkillInsightPanel({
               {new Set(filteredSkills.map((skill) => skill.category)).size}
             </div>
             <div className="text-xs uppercase tracking-[0.18em] text-slate-400">
-              Active domains
+              涵蓋分類
             </div>
           </div>
         </div>
@@ -1121,7 +1119,7 @@ export default function SkillsPage() {
       .then((data) => setSkills(data))
       .catch((error) => {
         console.error("Failed to load skills:", error);
-        setPageError("Unable to load the skill atlas right now.");
+        setPageError("目前無法載入技能頁面。");
       })
       .finally(() => setIsLoading(false));
   }, [dataClient]);
@@ -1172,7 +1170,7 @@ export default function SkillsPage() {
     () => ({
       "@context": "https://schema.org",
       "@type": "ItemList",
-      name: "Skill Atlas",
+      name: "技能圖譜",
       itemListElement: orderedFilteredSkills.map((skill, index) => ({
         "@type": "ListItem",
         position: index + 1,
@@ -1210,19 +1208,19 @@ export default function SkillsPage() {
 
   if (isLoading) {
     return (
-      <div className="container-page flex min-h-[60vh] items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">
-          Loading skill atlas...
+        <div className="container-page flex min-h-[60vh] items-center justify-center">
+          <div className="animate-pulse text-muted-foreground">
+            正在載入技能頁面...
+          </div>
         </div>
-      </div>
     );
   }
 
   return (
     <>
       <Seo
-        title="Skills | a6a27 showcase"
-        description="Explore a commercial-grade constellation view of engineering capabilities, from frontend systems to infrastructure."
+        title="技能 | a6a27 showcase"
+        description="以商用級的星圖介面瀏覽技能與工程能力，從前端到基礎架構都能快速理解。"
         path="/skills"
         structuredData={structuredData}
       />
@@ -1243,38 +1241,36 @@ export default function SkillsPage() {
           <div className="relative space-y-6 lg:space-y-8">
             <header className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end">
               <div className="max-w-3xl">
-                <div className="mb-3 text-[0.68rem] uppercase tracking-[0.36em] text-cyan-200/75">
-                  Skill atlas
+              <div className="mb-3 text-[0.68rem] uppercase tracking-[0.36em] text-cyan-200/75">
+                  技能圖譜
                 </div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-100">
                   <Sparkles className="h-4 w-4" />
-                  Immersive constellation interface
+                  沉浸式星圖介面
                 </div>
                 <h1 className="mt-5 text-white">
-                  Engineering capability, mapped like a night sky.
+                  把工程能力，整理成一眼看懂的技能星圖。
                 </h1>
                 <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
-                  This page now behaves like a polished product surface: calmer
-                  motion, clearer orbital composition, stronger information
-                  hierarchy, and a mobile flow that stays elegant instead of
-                  collapsing into stacked chips.
+                  這個頁面以商用品質重新整理過，資訊層級更清楚，技能更容易掃描，
+                  桌機與手機也都有各自適合的瀏覽方式。
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <MetricCard label="Signals in view" value={String(filteredSkills.length)} />
+                <MetricCard label="目前技能數" value={String(filteredSkills.length)} />
                 <MetricCard
-                  label="Featured stars"
+                  label="重點技能"
                   value={String(featuredCount)}
                   accent="text-violet-100"
                 />
                 <MetricCard
-                  label="Active domains"
+                  label="技能分類"
                   value={String(domainCount)}
                   accent="text-emerald-100"
                 />
                 <MetricCard
-                  label="Live filters"
+                  label="啟用篩選"
                   value={String(activeFilterCount)}
                   accent="text-amber-100"
                 />
@@ -1285,10 +1281,10 @@ export default function SkillsPage() {
               <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                 <div>
                   <div className="text-[0.68rem] uppercase tracking-[0.3em] text-cyan-200/70">
-                    Command deck
+                    篩選控制
                   </div>
                   <h2 className="mt-2 text-xl font-semibold text-white">
-                    Filter the constellation without losing the atmosphere
+                    篩選技能，同時保留整體閱讀感
                   </h2>
                 </div>
 
@@ -1306,7 +1302,7 @@ export default function SkillsPage() {
                       }
                     >
                       <Stars className="h-4 w-4" />
-                      Constellation
+                      星圖
                     </Button>
                     <Button
                       type="button"
@@ -1320,7 +1316,7 @@ export default function SkillsPage() {
                       }
                     >
                       <List className="h-4 w-4" />
-                      Matrix
+                      矩陣
                     </Button>
                   </div>
 
@@ -1331,7 +1327,7 @@ export default function SkillsPage() {
                     onClick={resetFilters}
                     className="rounded-full border-white/10 bg-slate-950/55 text-slate-100 hover:bg-white/10"
                   >
-                    Reset view
+                    重設檢視
                   </Button>
                 </div>
               </div>
@@ -1340,12 +1336,12 @@ export default function SkillsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-[0.68rem] uppercase tracking-[0.24em] text-slate-400">
-                      Domains
+                      分類
                     </span>
                     <span className="text-xs text-slate-400">
                       {selectedCategory
                         ? CATEGORY_LABELS[selectedCategory]
-                        : "All domains"}
+                        : "全部分類"}
                     </span>
                   </div>
                   <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -1360,7 +1356,7 @@ export default function SkillsPage() {
                           : "border border-white/10 bg-slate-950/55 text-slate-200 hover:bg-white/10"
                       }`}
                     >
-                      All
+                      全部
                     </Button>
                     {CATEGORY_ORDER.map((category) => (
                       <Button
@@ -1384,10 +1380,10 @@ export default function SkillsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-[0.68rem] uppercase tracking-[0.24em] text-slate-400">
-                      Tags
+                      標籤
                     </span>
                     <span className="text-xs text-slate-400">
-                      {selectedTag || "All tags"}
+                      {selectedTag || "全部標籤"}
                     </span>
                   </div>
                   <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -1402,7 +1398,7 @@ export default function SkillsPage() {
                           : "border border-white/10 bg-slate-950/55 text-slate-200 hover:bg-white/10"
                       }`}
                     >
-                      All
+                      全部
                     </Button>
                     {allTags.map((tag) => (
                       <Button
@@ -1437,7 +1433,7 @@ export default function SkillsPage() {
                 )}
                 {!selectedCategory && !selectedTag && (
                   <Badge className="border-white/10 bg-white/5 text-slate-300">
-                    No filters applied
+                    尚未套用篩選
                   </Badge>
                 )}
               </div>
@@ -1446,12 +1442,10 @@ export default function SkillsPage() {
             {filteredSkills.length === 0 ? (
               <div className="rounded-[2rem] border border-dashed border-white/15 bg-white/5 px-6 py-14 text-center shadow-[0_18px_50px_rgba(2,6,23,0.18)]">
                 <h2 className="text-2xl font-semibold text-white">
-                  No signals match the current filters.
+                  目前沒有符合條件的技能。
                 </h2>
                 <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-400">
-                  Reset the current category and tag filters to reopen the full
-                  constellation and restore the complete mobile and desktop
-                  experience.
+                  請重設目前的分類與標籤篩選，重新查看完整的技能內容與星圖版面。
                 </p>
                 <div className="mt-6">
                   <Button
@@ -1459,7 +1453,7 @@ export default function SkillsPage() {
                     onClick={resetFilters}
                     className="bg-cyan-300 text-slate-950 hover:bg-cyan-200"
                   >
-                    Reset view
+                    重設檢視
                   </Button>
                 </div>
               </div>
