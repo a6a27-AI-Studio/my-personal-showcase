@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { List, Sparkles, Stars } from "lucide-react";
+import { List, Stars } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,6 +46,9 @@ const PROFICIENCY_LABELS = [
   "進階",
   "專家",
 ];
+
+const STARFIELD_BATCH_SIZE = 10;
+const STARFIELD_ROTATION_MS = 10000;
 
 const PAGE_ANIMATIONS = `
   @keyframes cosmic-breathe {
@@ -253,9 +256,11 @@ function sortTagsByFrequency(skills: Skill[]) {
     .map(([tag]) => tag);
 }
 
-function buildPlacements(skills: Skill[]) {
+function buildPlacements(skills: Skill[], randomKey: number) {
   const ordered = prioritizeSkills(skills);
-  const random = seededRandom(hashString(ordered.map((skill) => skill.id).join("|")));
+  const random = seededRandom(
+    hashString(`${ordered.map((skill) => skill.id).join("|")}|${randomKey}`),
+  );
   const ringCapacities = [3, 6, 10, 14];
   const ringRadii = [
     { x: 16, y: 12 },
@@ -434,6 +439,7 @@ interface CosmicStarfieldProps {
   previewSkillId: string | null;
   selectedSkillId: string | null;
   reducedMotion: boolean;
+  placementSeed: number;
   onPreviewSkill: (skillId: string | null) => void;
   onSelectSkill: (skillId: string) => void;
 }
@@ -444,10 +450,11 @@ function CosmicStarfield({
   previewSkillId,
   selectedSkillId,
   reducedMotion,
+  placementSeed,
   onPreviewSkill,
   onSelectSkill,
 }: CosmicStarfieldProps) {
-  const placements = useMemo(() => buildPlacements(skills), [skills]);
+  const placements = useMemo(() => buildPlacements(skills, placementSeed), [placementSeed, skills]);
   const connections = useMemo(() => buildConnections(placements), [placements]);
   const featuredCount = skills.filter((skill) => FEATURED_SKILLS.includes(skill.name)).length;
 
@@ -489,7 +496,7 @@ function CosmicStarfield({
               技能星圖
             </div>
             <h2 className="mt-2 text-xl font-semibold text-white sm:text-2xl">
-              商用級技能星圖
+              技能星圖
             </h2>
           </div>
           <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/55 px-3 py-2 text-xs uppercase tracking-[0.2em] text-slate-300 backdrop-blur-xl">
@@ -596,7 +603,7 @@ function CosmicStarfield({
                         onFocus={() => onPreviewSkill(placement.skill.id)}
                         onBlur={() => onPreviewSkill(null)}
                         onClick={() => onSelectSkill(placement.skill.id)}
-                        aria-label={`${placement.skill.name}, proficiency ${placement.skill.level} out of 5`}
+                        aria-label={`${placement.skill.name}，熟練度 ${placement.skill.level} / 5`}
                         aria-pressed={isPinned}
                         title={placement.skill.name}
                       >
@@ -706,17 +713,16 @@ function CosmicStarfield({
 
         <div className="absolute inset-x-4 bottom-4 rounded-[1.5rem] border border-white/10 bg-slate-950/55 px-4 py-4 text-sm text-slate-300 shadow-[0_20px_50px_rgba(2,6,23,0.4)] backdrop-blur-2xl sm:inset-x-6">
           <div className="flex flex-wrap items-center gap-2 text-[0.68rem] uppercase tracking-[0.24em] text-slate-400">
-            <span>操作提示</span>
+            <span>查看方式</span>
             <span className="text-slate-600">/</span>
             <span>名稱常駐顯示</span>
             <span className="text-slate-600">/</span>
             <span>滑入顯示全名</span>
             <span className="text-slate-600">/</span>
-            <span>點擊固定</span>
+            <span>10 秒切換下一批</span>
           </div>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
-            每個技能現在都會預設顯示縮短名稱，面試官可以直接掃描整張星圖，
-            不需要把滑鼠一個一個移上去找技能名稱。
+            每次顯示 10 項技能，10 秒切換下一批；滑入或點擊後會暫停輪播。
           </p>
         </div>
       </div>
@@ -737,7 +743,7 @@ function QuickAccessStrip({
   onSelectSkill: (skillId: string) => void;
   className?: string;
 }) {
-  const activeSkill = skills.find((skill) => skill.id === activeSkillId) || skills[0] || null;
+  const activeSkill = skills.find((skill) => skill.id === activeSkillId) || null;
   const activeTheme = activeSkill ? CATEGORY_STYLES[activeSkill.category] : null;
   const stateLabel = activeSkill ? getSignalStateLabel(activeSkill, selectedSkillId) : null;
 
@@ -750,13 +756,13 @@ function QuickAccessStrip({
       <div className="relative mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="text-[0.68rem] uppercase tracking-[0.3em] text-cyan-200/70">
-            行動版瀏覽
+            手機版
           </div>
           <h3 className="mt-2 text-lg font-semibold text-white">
-            滑動、點擊、查看
+            滑動查看技能
           </h3>
           <p className="mt-2 max-w-[17rem] text-sm leading-6 text-slate-300">
-            在觸控裝置上會切換成卡片滑動模式，版面更穩定，點擊後詳情也會直接出現在下方。
+            左右滑動切換技能，點擊後立即查看完整資訊。
           </p>
         </div>
         <div className="w-full rounded-[1.15rem] border border-white/10 bg-slate-950/65 px-3 py-2 text-left text-xs text-slate-300 sm:w-auto sm:text-right">
@@ -922,7 +928,7 @@ function TraditionalSkillsView({
                   {CATEGORY_LABELS[typedCategory]}
                 </h2>
               </div>
-              <Badge className={theme.badge}>{categorySkills.length} signals</Badge>
+              <Badge className={theme.badge}>{categorySkills.length} 項技能</Badge>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -1006,7 +1012,19 @@ function SkillInsightPanel({
   displayMode: DisplayMode;
 }) {
   if (!activeSkill) {
-    return null;
+    return (
+      <aside className="rounded-[1.9rem] border border-white/10 bg-slate-950/55 p-5 text-slate-100 shadow-[0_28px_80px_rgba(2,6,23,0.45)] backdrop-blur-2xl lg:sticky lg:top-24 sm:p-6">
+        <div className="text-[0.68rem] uppercase tracking-[0.3em] text-cyan-200/70">
+          技能面板
+        </div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">
+          尚未選擇技能
+        </h2>
+        <p className="mt-3 text-sm leading-7 text-slate-300">
+          滑入或點擊星圖中的技能，或切換到矩陣檢視。
+        </p>
+      </aside>
+    );
   }
 
   const theme = CATEGORY_STYLES[activeSkill.category];
@@ -1109,6 +1127,8 @@ export default function SkillsPage() {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("starfield");
   const [selectedSkillId, setSelectedSkillId] = useState<string | null>(null);
   const [previewSkillId, setPreviewSkillId] = useState<string | null>(null);
+  const [starfieldBatchIndex, setStarfieldBatchIndex] = useState(0);
+  const [starfieldSeed, setStarfieldSeed] = useState(() => Date.now());
 
   useEffect(() => {
     setPageError(null);
@@ -1157,11 +1177,60 @@ export default function SkillsPage() {
     }
   }, [orderedFilteredSkills, previewSkillId, selectedSkillId]);
 
+  const starfieldBatchCount = Math.max(
+    1,
+    Math.ceil(orderedFilteredSkills.length / STARFIELD_BATCH_SIZE),
+  );
+
+  const visibleStarfieldSkills = useMemo(() => {
+    const start = (starfieldBatchIndex % starfieldBatchCount) * STARFIELD_BATCH_SIZE;
+    return orderedFilteredSkills.slice(start, start + STARFIELD_BATCH_SIZE);
+  }, [orderedFilteredSkills, starfieldBatchCount, starfieldBatchIndex]);
+
+  useEffect(() => {
+    setStarfieldBatchIndex(0);
+    setStarfieldSeed(Date.now());
+  }, [orderedFilteredSkills]);
+
+  useEffect(() => {
+    if (!selectedSkillId) return;
+
+    const selectedIndex = orderedFilteredSkills.findIndex(
+      (skill) => skill.id === selectedSkillId,
+    );
+
+    if (selectedIndex === -1) return;
+    setStarfieldBatchIndex(Math.floor(selectedIndex / STARFIELD_BATCH_SIZE));
+  }, [orderedFilteredSkills, selectedSkillId]);
+
+  useEffect(() => {
+    if (
+      displayMode !== "starfield" ||
+      orderedFilteredSkills.length <= STARFIELD_BATCH_SIZE ||
+      selectedSkillId ||
+      previewSkillId
+    ) {
+      return undefined;
+    }
+
+    const timer = window.setInterval(() => {
+      setStarfieldBatchIndex((current) => (current + 1) % starfieldBatchCount);
+      setStarfieldSeed(Date.now() + Math.floor(Math.random() * 100000));
+    }, STARFIELD_ROTATION_MS);
+
+    return () => window.clearInterval(timer);
+  }, [
+    displayMode,
+    orderedFilteredSkills.length,
+    previewSkillId,
+    selectedSkillId,
+    starfieldBatchCount,
+  ]);
+
   const activeSkill = useMemo(() => {
     return (
       orderedFilteredSkills.find((skill) => skill.id === selectedSkillId) ||
       orderedFilteredSkills.find((skill) => skill.id === previewSkillId) ||
-      orderedFilteredSkills[0] ||
       null
     );
   }, [orderedFilteredSkills, previewSkillId, selectedSkillId]);
@@ -1170,7 +1239,7 @@ export default function SkillsPage() {
     () => ({
       "@context": "https://schema.org",
       "@type": "ItemList",
-      name: "技能圖譜",
+      name: "技能一覽",
       itemListElement: orderedFilteredSkills.map((skill, index) => ({
         "@type": "ListItem",
         position: index + 1,
@@ -1219,8 +1288,8 @@ export default function SkillsPage() {
   return (
     <>
       <Seo
-        title="技能 | a6a27 showcase"
-        description="以商用級的星圖介面瀏覽技能與工程能力，從前端到基礎架構都能快速理解。"
+        title="技能 | a6a27"
+        description="查看技能分布、熟練度與技術標籤。"
         path="/skills"
         structuredData={structuredData}
       />
@@ -1241,19 +1310,14 @@ export default function SkillsPage() {
           <div className="relative space-y-6 lg:space-y-8">
             <header className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end">
               <div className="max-w-3xl">
-              <div className="mb-3 text-[0.68rem] uppercase tracking-[0.36em] text-cyan-200/75">
-                  技能圖譜
-                </div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-100">
-                  <Sparkles className="h-4 w-4" />
-                  沉浸式星圖介面
+                <div className="mb-3 text-[0.68rem] uppercase tracking-[0.36em] text-cyan-200/75">
+                  技能概覽
                 </div>
                 <h1 className="mt-5 text-white">
-                  把工程能力，整理成一眼看懂的技能星圖。
+                  技能一覽
                 </h1>
                 <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
-                  這個頁面以商用品質重新整理過，資訊層級更清楚，技能更容易掃描，
-                  桌機與手機也都有各自適合的瀏覽方式。
+                  快速查看技能、熟練度與技術分布。
                 </p>
               </div>
 
@@ -1281,10 +1345,10 @@ export default function SkillsPage() {
               <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                 <div>
                   <div className="text-[0.68rem] uppercase tracking-[0.3em] text-cyan-200/70">
-                    篩選控制
+                    篩選條件
                   </div>
                   <h2 className="mt-2 text-xl font-semibold text-white">
-                    篩選技能，同時保留整體閱讀感
+                    篩選技能
                   </h2>
                 </div>
 
@@ -1465,11 +1529,12 @@ export default function SkillsPage() {
                       {hoverCapablePointer && (
                         <div className="hidden lg:block">
                           <CosmicStarfield
-                            skills={orderedFilteredSkills}
+                            skills={visibleStarfieldSkills}
                             activeSkillId={activeSkill?.id || null}
                             previewSkillId={previewSkillId}
                             selectedSkillId={selectedSkillId}
                             reducedMotion={reducedMotion}
+                            placementSeed={starfieldSeed}
                             onPreviewSkill={setPreviewSkillId}
                             onSelectSkill={handleSelectSkill}
                           />
